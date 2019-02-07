@@ -2,15 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:talking_stopwatch/helpers/system_helpers.dart';
 
 class TimerValues {
   final TimerState timerState;
   final int time;
-
-  TimerValues(this.timerState, this.time);
+  final int interval;
+  final bool vibrate;
+  final bool speak;
+  
+  TimerValues({this.timerState, this.time, this.interval = 10, this.vibrate = false, this.speak = true});
 }
 
-enum TimerState { start, cancel, reset, setTime }
+enum TimerState { start, cancel, reset, setTime, updateValue }
 
 class StopwatchWidget extends StatefulWidget {
   final Stream<TimerValues> timeStream;
@@ -38,6 +42,9 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   String _ttsPaused = "Stopwatch paused";
   String _ttsReset = "Stopwatch resetted";
   String _ttsAnd = "and";
+  int _interval = 10;
+  bool _vibrate = false;
+  bool _speak = true;
 
   @override
   void initState() {
@@ -55,13 +62,18 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
 
     widget.timeStream.listen((TimerValues item) {
       switch (item.timerState) {
+        case TimerState.updateValue:
+          _speak = item.speak;
+          _interval = item.interval;
+          _vibrate = item.vibrate;
+          break;
         case TimerState.start:
           widget.flutterTts.speak(_ttsStarted);
 
           if (_timer == null) {
             _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
               _elapsedTime += 1;
-              formatTime(true);
+              formatTime(_speak, _vibrate);
             });
           }
           break;
@@ -105,13 +117,13 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text("$_elapsedTimeMinutesFormatted:$_elapsedTimeSecondsFormatted",
-              style: TextStyle(color: Colors.white, fontSize: 60)),
+              style: TextStyle(color: Colors.white, fontSize: 80)),
         ],
       ),
     );
   }
 
-  void formatTime(bool speak) {
+  void formatTime(bool speak, bool vibrate) {
     setState(() {
       if (_elapsedTime > 59) {
         _elapsedTimeMinutes = (_elapsedTime / 60).floor();
@@ -129,13 +141,19 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
             : _elapsedTimeSeconds.toString();
       }
     });
+
     if (speak) {
-      _speakTime(_elapsedTimeMinutes, _elapsedTimeSeconds);
+      _speakTime(_elapsedTimeMinutes, _elapsedTimeSeconds, vibrate);
     }
   }
 
-  void _speakTime(int minutes, int seconds) async {
-    if (seconds == 0 || seconds % 10 == 0) {
+  void _speakTime(int minutes, int seconds, bool vibrate) async {
+    if (seconds == 0 || seconds % _interval == 0) {
+      print(vibrate);
+      if (vibrate) {
+        SystemHelpers.vibrate100();
+      }
+      
       if (minutes == 0) {
         widget.flutterTts.speak("$seconds $_ttsSecondPlur");
       } else {

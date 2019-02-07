@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:screen/screen.dart';
 import 'package:intl/intl_standalone.dart';
+import 'package:vibration/vibration.dart';
 
 class SystemHelpers {
   static Future<String> getSystemLanguageCode() async {
@@ -37,6 +38,22 @@ class SystemHelpers {
           [SystemUiOverlay.top, SystemUiOverlay.bottom]);
     } else {
       return SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
+    }
+  }
+
+  static Future<void> vibrate30() async {
+    if (await Vibration.hasVibrator()) {
+      await Vibration.vibrate(
+        duration: 30
+      );
+    }
+  }
+
+  static Future<void> vibrate100() async {
+    if (await Vibration.hasVibrator()) {
+      await Vibration.vibrate(
+        duration: 100
+      );
     }
   }
 }
