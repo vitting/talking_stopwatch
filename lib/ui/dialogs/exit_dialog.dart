@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
 import 'package:talking_stopwatch/helpers/system_helpers.dart';
 
@@ -17,7 +18,7 @@ class ExitDialog extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 20),
               child: Text(
-                "Vil du afslutte?",
+                FlutterI18n.translate(context, "exit.text1"),
                 style: TextStyle(fontSize: 25, color: Colors.white),
               ),
             ),
@@ -34,7 +35,7 @@ class ExitDialog extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Text("JA",
+                    child: Text(FlutterI18n.translate(context, "exit.text2"),
                         style: TextStyle(color: Colors.white, fontSize: 20)),
                   ),
                 ),
@@ -48,7 +49,7 @@ class ExitDialog extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Text("NEJ",
+                    child: Text(FlutterI18n.translate(context, "exit.text3"),
                         style: TextStyle(color: Colors.white, fontSize: 20)),
                   ),
                 )

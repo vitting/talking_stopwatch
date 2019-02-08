@@ -10,8 +10,17 @@ class TimerValues {
   final int interval;
   final bool vibrate;
   final bool speak;
-  
-  TimerValues({this.timerState, this.time, this.interval = 10, this.vibrate = false, this.speak = true});
+  final double volume;
+  final String language;
+
+  TimerValues(
+      {this.timerState,
+      this.time,
+      this.interval = 10,
+      this.vibrate = false,
+      this.speak = true,
+      this.volume = 1.0,
+      this.language = "en"});
 }
 
 enum TimerState { start, cancel, reset, setTime, updateValue }
@@ -40,25 +49,19 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   String _ttsSecondPlur = "seconds";
   String _ttsStarted = "Stopwatch started";
   String _ttsPaused = "Stopwatch paused";
-  String _ttsReset = "Stopwatch resetted";
+  String _ttsReset = "Stopwatch reset";
   String _ttsAnd = "and";
   int _interval = 10;
   bool _vibrate = false;
   bool _speak = true;
+  double _volume = 1.0;
+  String _language = "en";
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.languageCode == "da") {
-      _ttsMinutePlur = "minutter";
-      _ttsMinute = "minut";
-      _ttsSecondPlur = "sekunder";
-      _ttsStarted = "Stopur started";
-      _ttsPaused = "Stopur på pause";
-      _ttsReset = "Stopur nulstillet";
-      _ttsAnd = "og";
-    }
+    _setLanguage(widget.languageCode);
 
     widget.timeStream.listen((TimerValues item) {
       switch (item.timerState) {
@@ -66,9 +69,15 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           _speak = item.speak;
           _interval = item.interval;
           _vibrate = item.vibrate;
+          _volume = item.volume;
+          _language = item.language;
+          _setLanguage(_language);
+          widget.flutterTts.setVolume(_volume);
           break;
         case TimerState.start:
-          widget.flutterTts.speak(_ttsStarted);
+          if (widget.languageCode != "other") {
+            widget.flutterTts.speak(_ttsStarted);
+          }
 
           if (_timer == null) {
             _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
@@ -78,7 +87,10 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           }
           break;
         case TimerState.reset:
-          widget.flutterTts.speak(_ttsReset);
+          if (widget.languageCode != "other") {
+            widget.flutterTts.speak(_ttsReset);
+          }
+
           _timer?.cancel();
           _timer = null;
           _elapsedTimeMinutes = 0;
@@ -91,7 +103,10 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           });
           break;
         case TimerState.cancel:
-          widget.flutterTts.speak(_ttsPaused);
+          if (widget.languageCode != "other") {
+            widget.flutterTts.speak(_ttsPaused);
+          }
+
           if (_timer != null && _timer.isActive) {
             _timer?.cancel();
             _timer = null;
@@ -149,30 +164,66 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
 
   void _speakTime(int minutes, int seconds, bool vibrate) async {
     if (seconds == 0 || seconds % _interval == 0) {
-      print(vibrate);
       if (vibrate) {
         SystemHelpers.vibrate100();
       }
       
       if (minutes == 0) {
-        widget.flutterTts.speak("$seconds $_ttsSecondPlur");
-      } else {
-        if (minutes == 1) {
-          if (seconds == 0) {
-            widget.flutterTts.speak("$minutes $_ttsMinute");
-          } else {
-            widget.flutterTts.speak(
-                "$minutes $_ttsMinute $_ttsAnd $seconds $_ttsSecondPlur");
-          }
+        if (widget.languageCode == "other") {
+          widget.flutterTts.speak("$seconds");
         } else {
-          if (seconds == 0) {
-            widget.flutterTts.speak("$minutes $_ttsMinutePlur");
+          widget.flutterTts.speak("$seconds $_ttsSecondPlur");
+        }
+      } else {
+        if (widget.languageCode == "other") {
+          widget.flutterTts.speak("$minutes:$seconds");
+        } else {
+          if (minutes == 1) {
+            if (seconds == 0) {
+              widget.flutterTts.speak("$minutes $_ttsMinute");
+            } else {
+              widget.flutterTts.speak(
+                  "$minutes $_ttsMinute $_ttsAnd $seconds $_ttsSecondPlur");
+            }
           } else {
-            widget.flutterTts.speak(
-                "$minutes $_ttsMinutePlur $_ttsAnd $seconds $_ttsSecondPlur");
+            if (seconds == 0) {
+              widget.flutterTts.speak("$minutes $_ttsMinutePlur");
+            } else {
+              widget.flutterTts.speak(
+                  "$minutes $_ttsMinutePlur $_ttsAnd $seconds $_ttsSecondPlur");
+            }
           }
         }
       }
+    }
+  }
+
+  void _setLanguage(String language) async {
+    if (language == "da" &&
+        await widget.flutterTts.isLanguageAvailable("da-DK")) {
+      await widget.flutterTts.setLanguage("da-DK");
+    } else {
+      if (await widget.flutterTts.isLanguageAvailable("en-US")) {
+        await widget.flutterTts.setLanguage("en-US");
+      }
+    }
+
+    if (language == "da") {
+      _ttsMinutePlur = "minutter";
+      _ttsMinute = "minut";
+      _ttsSecondPlur = "sekunder";
+      _ttsStarted = "Stopur started";
+      _ttsPaused = "Stopur på pause";
+      _ttsReset = "Stopur nulstillet";
+      _ttsAnd = "og";
+    } else {
+      _ttsMinutePlur = "minutes";
+      _ttsMinute = "minute";
+      _ttsSecondPlur = "seconds";
+      _ttsStarted = "Stopwatch started";
+      _ttsPaused = "Stopwatch paused";
+      _ttsReset = "Stopwatch reset";
+      _ttsAnd = "and";
     }
   }
 }

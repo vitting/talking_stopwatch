@@ -1,0 +1,23 @@
+{
+    "help": {
+        "text1": "Settings",
+        "text2": "Tap to start stopwatch",
+        "text3": "Longpress to reset stopwatch",
+        "text4": "Tap to stop stopwatch"
+    },
+    "settings": {
+        "text1": "Settings",
+        "text2": "Language",
+        "text3": "Volume",
+        "text4": "Speach interval",
+        "text5": "Don't turnoff screen",
+        "text6": "Vibrate on tap",
+        "text7": "Speach",
+        "text8": "Vibrate at interval"
+    },
+    "exit": {
+        "text1": "Do you want to exit?",
+        "text2": "YES",
+        "text3": "NO"
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "help": {
+        "text1": "Indstillinger",
+        "text2": "Tryk for at starte stopuret",
+        "text3": "Hold inde for at nulstille stopuret",
+        "text4": "Tryk for stoppe stopuret"
+    },
+    "settings": {
+        "text1": "Indstillinger",
+        "text2": "Sprog",
+        "text3": "Lydstyrke",
+        "text4": "Tale interval",
+        "text5": "Sluk ikke skærmen",
+        "text6": "Vibrer ved tryk",
+        "text7": "Tale",
+        "text8": "Vibrer ved interval"
+    },
+    "exit": {
+        "text1": "Vil du afslutte?",
+        "text2": "JA",
+        "text3": "NEJ"
+    }
+}

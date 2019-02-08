@@ -8,13 +8,34 @@ class SettingsData {
   bool vibrate;
   bool speak;
   bool vibrateAtInterval;
+  double volume;
+  String language;
 
   SettingsData(
       {this.interval = 10,
       this.keepScreenOn = false,
       this.vibrate = true,
       this.speak = true,
-      this.vibrateAtInterval = false});
+      this.vibrateAtInterval = false,
+      this.volume = 1.0, this.language = "en"});
+
+  Future<bool> updateLanguage(String language) async {
+    if (preferences == null) {
+      preferences = await SharedPreferences.getInstance();
+    }
+
+    this.language = language;
+    return preferences.setString("talking_language", language);
+  }
+
+  Future<bool> updateVolume(double volume) async {
+    if (preferences == null) {
+      preferences = await SharedPreferences.getInstance();
+    }
+
+    this.volume = volume;
+    return preferences.setDouble("talking_volume", volume);
+  }
 
   Future<bool> updateInterval(int interval) async {
     if (preferences == null) {
@@ -67,14 +88,43 @@ class SettingsData {
     bool vibrate = true;
     bool speak = true;
     bool vibrateAtInterval = false;
+    double volume = 1.0;
+    String language = "en";
 
     if (preferences == null) {
       preferences = await SharedPreferences.getInstance();
     }
 
     try {
-      interval = preferences.getInt("talking_interval");
+      language = preferences.getString("talking_language");
+      if (language == null) {
+        language = "en";
+        await preferences.setString("talking_language", language);
+      }
     } catch (e) {
+      print(e);
+      await preferences.setString("talking_language", language);
+    }
+
+    try {
+      volume = preferences.getDouble("talking_volume");
+      if (volume == null) {
+        volume = 1.0;
+        await preferences.setDouble("talking_volume", volume);
+      }
+    } catch (e) {
+      print(e);
+      await preferences.setDouble("talking_volume", volume);
+    }
+
+    try {
+      interval = preferences.getInt("talking_interval");
+      if (interval == null) {
+        interval = 10;
+        await preferences.setInt("talking_interval", interval);
+      }
+    } catch (e) {
+      print(e);
       await preferences.setInt("talking_interval", interval);
     }
 
@@ -86,6 +136,7 @@ class SettingsData {
         await preferences.setBool("talking_keepscreenon", keepScreenOn);
       }
     } catch (e) {
+      print(e);
       await preferences.setBool("talking_keepscreenon", keepScreenOn);
     }
 
@@ -96,6 +147,7 @@ class SettingsData {
         await preferences.setBool("talking_vibrate", vibrate);
       }
     } catch (e) {
+      print(e);
       await preferences.setBool("talking_vibrate", vibrate);
     }
 
@@ -106,6 +158,7 @@ class SettingsData {
         await preferences.setBool("talking_speak", speak);
       }
     } catch (e) {
+      print(e);
       await preferences.setBool("talking_speak", speak);
     }
 
@@ -117,6 +170,7 @@ class SettingsData {
             "talking_vibrateAtInterval", vibrateAtInterval);
       }
     } catch (e) {
+      print(e);
       await preferences.setBool("talking_vibrateAtInterval", vibrateAtInterval);
     }
 
@@ -125,6 +179,7 @@ class SettingsData {
         keepScreenOn: keepScreenOn,
         vibrate: vibrate,
         speak: speak,
-        vibrateAtInterval: vibrateAtInterval);
+        vibrateAtInterval: vibrateAtInterval,
+        volume: volume, language: language);
   }
 }
