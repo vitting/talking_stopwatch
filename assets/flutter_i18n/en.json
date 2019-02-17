@@ -4,7 +4,10 @@
         "text2": "Tap to start stopwatch",
         "text3": "Longpress to reset stopwatch",
         "text4": "Tap to stop stopwatch",
-        "text5": "Longpress to reset stopwatch and start it again"
+        "text5": "Longpress to reset stopwatch and start it again",
+        "text6": "Turn on/off reading of time",
+        "text7": "Change the reading interval between 10s/30s",
+        "text8": "Change the reading volume between low/mid/high"
     },
     "settings": {
         "text1": "Settings",
@@ -20,5 +23,23 @@
         "text1": "Do you want to exit?",
         "text2": "YES",
         "text3": "NO"
+    },
+    "shortcutHelp": {
+        "text": "Show help"
+    },
+    "shortcutInterval": {
+        "text1": "Change interval to 30 seconds",
+        "text2": "Change interval to 10 seconds"
+    },
+    "shortcutSettings": {
+        "text1": "Show settings"
+    },
+    "shortcutSpeak": {
+        "text1": "Disable speech",
+        "text2": "Enable speech"
+    },
+    "shortcutVolume": {
+        "text1": "Increase volume",
+        "text2": "Decrease volume"
     }
 }

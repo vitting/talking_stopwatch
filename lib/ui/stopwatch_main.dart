@@ -1,14 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:talking_stopwatch/helpers/common_functions.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
 import 'package:talking_stopwatch/helpers/system_helpers.dart';
 import 'package:talking_stopwatch/ui/dialogs/exit_dialog.dart';
 import 'package:talking_stopwatch/ui/dialogs/help_dialog.dart';
-import 'package:talking_stopwatch/ui/dialogs/settings_dialog.dart';
+import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_help_widget.dart';
+import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_interval_widget.dart';
+import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_settings_widget.dart';
+import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_speak_widget.dart';
+import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_volume_widget.dart';
 import 'package:talking_stopwatch/ui/stopwatch_button_widget.dart';
 import 'package:talking_stopwatch/ui/stopwatch_timer_widget.dart';
 
@@ -32,7 +35,6 @@ class StopwatchMainState extends State<StopwatchMain> {
   final StreamController<TimerValues> _stopwatchController =
       StreamController<TimerValues>.broadcast();
   int _buttonIndex = 0;
-  int _speakIndex = 0;
   String _languageCode = "en";
   bool _showHelp = false;
 
@@ -49,25 +51,18 @@ class StopwatchMainState extends State<StopwatchMain> {
       SystemHelpers.setScreenOn();
     }
 
-    print(await widget.flutterTts.isLanguageAvailable("en-US"));
-
     if (widget.settings.language == "da" &&
         await widget.flutterTts.isLanguageAvailable("da-DK")) {
       widget.flutterTts.setLanguage("da-DK");
-      // print("Setting DA");
     } else {
       if (await widget.flutterTts.isLanguageAvailable("en-US")) {
         widget.flutterTts.setLanguage("en-US");
-        // print("Setting EN");
       } else {
         _languageCode = "other";
-        // print("Setting OTHER");
       }
     }
 
     await widget.flutterTts.setVolume(widget.settings.volume);
-
-    _speakIndex = widget.settings.speak ? 0 : 1;
   }
 
   @override
@@ -89,6 +84,7 @@ class StopwatchMainState extends State<StopwatchMain> {
             body: Stack(
               children: <Widget>[
                 Container(
+                  margin: EdgeInsets.only(top: 30),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -98,7 +94,7 @@ class StopwatchMainState extends State<StopwatchMain> {
                         flutterTts: widget.flutterTts,
                       ),
                       SizedBox(
-                        height: 20,
+                        height: 30,
                       ),
                       StopwatchButton(
                         buttonIndex: _buttonIndex,
@@ -109,85 +105,34 @@ class StopwatchMainState extends State<StopwatchMain> {
                     ],
                   ),
                 ),
-                Positioned(
-                  left: 20,
-                  top: 40,
-                  child: IndexedStack(
-                    index: _speakIndex,
-                    children: <Widget>[
-                      IconButton(
-                        iconSize: 30,
-                        icon: Icon(MdiIcons.voice),
-                        color: Colors.white,
-                        onPressed: () async {
-                          _vibrateButton();
-                          await widget.settings.updateSpeak(false);
-                          _stopwatchController.add(
-                              _getTimeValues(TimerState.updateValue, null));
-
-                          setState(() {
-                            _speakIndex = 1;
-                          });
-                        },
-                      ),
-                      IconButton(
-                        iconSize: 30,
-                        icon: Icon(MdiIcons.voice),
-                        color: Colors.white24,
-                        onPressed: () async {
-                          _vibrateButton();
-                          await widget.settings.updateSpeak(true);
-                          _stopwatchController.add(
-                              _getTimeValues(TimerState.updateValue, null));
-
-                          setState(() {
-                            _speakIndex = 0;
-                          });
-                        },
-                      )
-                    ],
-                  ),
+                ShortcutSpeak(
+                  controller: _stopwatchController,
+                  settings: widget.settings,
                 ),
-                Positioned(
-                  right: 20,
-                  top: 40,
-                  child: IconButton(
-                    iconSize: 30,
-                    icon: Icon(Icons.settings),
-                    color: Colors.white,
-                    onPressed: () async {
-                      _vibrateButton();
-                      await _showSettings(context);
-                      await FlutterI18n.refresh(
-                          context, widget.settings.language);
-                      _stopwatchController
-                          .add(_getTimeValues(TimerState.updateValue, null));
-                      
-                      setState(() {
-                        _speakIndex = widget.settings.speak ? 0 : 1; 
-                      });
-                    },
-                  ),
+                ShortcutInterval(
+                  controller: _stopwatchController,
+                  settings: widget.settings,
                 ),
-                Positioned(
-                  right: 70,
-                  top: 40,
-                  child: IconButton(
-                    iconSize: 30,
-                    icon: Icon(Icons.help),
-                    color: Colors.white,
-                    onPressed: () async {
-                      _vibrateButton();
+                ShortcutVolume(
+                  controller: _stopwatchController,
+                  settings: widget.settings,
+                ),
+                ShortcutSettings(
+                  controller: _stopwatchController,
+                  settings: widget.settings,
+                ),
+                ShortcutHelp(
+                  onPressed: () {
+                    vibrateButton(widget.settings);
 
-                      setState(() {
-                        _showHelp = !_showHelp;
-                      });
-                    },
-                  ),
+                    setState(() {
+                      _showHelp = !_showHelp;
+                    });
+                  },
                 ),
                 _showHelp
                     ? HelpDialog(onTap: () {
-                        _vibrateButton();
+                        vibrateButton(widget.settings);
                         setState(() {
                           _showHelp = false;
                         });
@@ -200,51 +145,38 @@ class StopwatchMainState extends State<StopwatchMain> {
   void _buttonAction(StopwatchButtonAction action) {
     switch (action) {
       case StopwatchButtonAction.playTap:
-        _vibrateButton();
-        _stopwatchController.add(_getTimeValues(TimerState.start, null));
+        vibrateButton(widget.settings);
+        _stopwatchController
+            .add(getTimeValues(TimerState.start, null, widget.settings));
         setState(() {
           _buttonIndex = 1;
         });
         break;
       case StopwatchButtonAction.playLongPress:
-        _vibrateButton();
-        _stopwatchController.add(_getTimeValues(TimerState.reset, 0));
+        vibrateButton(widget.settings);
+        _stopwatchController
+            .add(getTimeValues(TimerState.reset, 0, widget.settings));
         break;
       case StopwatchButtonAction.pauseTap:
-        _vibrateButton();
-        _stopwatchController.add(_getTimeValues(TimerState.cancel, 0));
+        vibrateButton(widget.settings);
+        _stopwatchController
+            .add(getTimeValues(TimerState.cancel, 0, widget.settings));
         setState(() {
           _buttonIndex = 0;
         });
         break;
       case StopwatchButtonAction.pauseLongPress:
-        _vibrateButton();
-        _stopwatchController.add(_getTimeValues(TimerState.reset, 0));
-        _stopwatchController.add(_getTimeValues(TimerState.start, null));
+        vibrateButton(widget.settings);
+        _stopwatchController
+            .add(getTimeValues(TimerState.reset, 0, widget.settings));
+        _stopwatchController
+            .add(getTimeValues(TimerState.start, null, widget.settings));
         break;
     }
   }
 
-  TimerValues _getTimeValues(TimerState state, int time) {
-    return TimerValues(
-        timerState: state,
-        time: time,
-        interval: widget.settings.interval,
-        speak: widget.settings.speak,
-        vibrate: widget.settings.vibrateAtInterval,
-        language: widget.settings.language,
-        volume: widget.settings.volume);
-  }
-
-  Future<void> _showSettings(BuildContext context) async {
-    return showDialog<void>(
-        context: context,
-        builder: (BuildContext dialogContext) =>
-            SettingsDialog(settings: widget.settings));
-  }
-
   Future<bool> _willPop(BuildContext context) async {
-    _vibrateButton();
+    vibrateButton(widget.settings);
     if (_showHelp) {
       setState(() {
         _showHelp = false;
@@ -255,12 +187,6 @@ class StopwatchMainState extends State<StopwatchMain> {
           context: context,
           builder: (BuildContext dialogContext) =>
               ExitDialog(settings: widget.settings));
-    }
-  }
-
-  void _vibrateButton() {
-    if (widget.settings.vibrate) {
-      SystemHelpers.vibrate30();
     }
   }
 }

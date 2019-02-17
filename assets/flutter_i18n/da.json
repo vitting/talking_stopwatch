@@ -4,7 +4,10 @@
         "text2": "Tryk for at starte stopuret",
         "text3": "Hold inde for at nulstille stopuret",
         "text4": "Tryk for stoppe stopuret",
-        "text5": "Hold inde for at nulstille stopuret og starte det igen"
+        "text5": "Hold inde for at nulstille stopuret og starte det igen",
+        "text6": "Slå oplæsning af tiden til/fra",
+        "text7": "Skift oplæsnings interval iimellem 10s/30s",
+        "text8": "Skift oplæsnings lydstyrke imellem lav/mellem/høj"
     },
     "settings": {
         "text1": "Indstillinger",
@@ -20,5 +23,23 @@
         "text1": "Vil du afslutte?",
         "text2": "JA",
         "text3": "NEJ"
+    },
+    "shortcutHelp": {
+        "text1": "Vis hjælp"
+    },
+    "shortcutInterval": {
+        "text1": "Skift interval til 30 sekunder",
+        "text2": "Skift interval til 10 sekunder"
+    },
+    "shortcutSettings": {
+        "text1": "Vis indstillinger"
+    },
+    "shortcutSpeak": {
+        "text1": "Slå tale fra",
+        "text2": "Slå tale til"
+    },
+    "shortcutVolume": {
+        "text1": "Forøge lydstyrken",
+        "text2": "Formindske lydstyrken"
     }
 }

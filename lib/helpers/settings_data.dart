@@ -1,10 +1,7 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talking_stopwatch/helpers/db_helpers.dart';
 import 'package:talking_stopwatch/helpers/db_sql_create.dart';
 
 class SettingsData {
-  static SharedPreferences preferences;
-
   String id;
   int interval;
   bool keepScreenOn;

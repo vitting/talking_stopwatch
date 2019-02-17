@@ -16,7 +16,7 @@ class DbHelpers {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, dbName);
 
-    Sqflite.setDebugModeOn();
+    // Sqflite.setDebugModeOn();
 
     if (_db == null || !_db.isOpen) {
       try {
