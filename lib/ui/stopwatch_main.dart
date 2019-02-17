@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
 import 'package:talking_stopwatch/helpers/system_helpers.dart';
 import 'package:talking_stopwatch/ui/dialogs/exit_dialog.dart';
@@ -31,6 +32,7 @@ class StopwatchMainState extends State<StopwatchMain> {
   final StreamController<TimerValues> _stopwatchController =
       StreamController<TimerValues>.broadcast();
   int _buttonIndex = 0;
+  int _speakIndex = 0;
   String _languageCode = "en";
   bool _showHelp = false;
 
@@ -64,6 +66,8 @@ class StopwatchMainState extends State<StopwatchMain> {
     }
 
     await widget.flutterTts.setVolume(widget.settings.volume);
+
+    _speakIndex = widget.settings.speak ? 0 : 1;
   }
 
   @override
@@ -106,6 +110,45 @@ class StopwatchMainState extends State<StopwatchMain> {
                   ),
                 ),
                 Positioned(
+                  left: 20,
+                  top: 40,
+                  child: IndexedStack(
+                    index: _speakIndex,
+                    children: <Widget>[
+                      IconButton(
+                        iconSize: 30,
+                        icon: Icon(MdiIcons.voice),
+                        color: Colors.white,
+                        onPressed: () async {
+                          _vibrateButton();
+                          await widget.settings.updateSpeak(false);
+                          _stopwatchController.add(
+                              _getTimeValues(TimerState.updateValue, null));
+
+                          setState(() {
+                            _speakIndex = 1;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        iconSize: 30,
+                        icon: Icon(MdiIcons.voice),
+                        color: Colors.white24,
+                        onPressed: () async {
+                          _vibrateButton();
+                          await widget.settings.updateSpeak(true);
+                          _stopwatchController.add(
+                              _getTimeValues(TimerState.updateValue, null));
+
+                          setState(() {
+                            _speakIndex = 0;
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                Positioned(
                   right: 20,
                   top: 40,
                   child: IconButton(
@@ -119,6 +162,10 @@ class StopwatchMainState extends State<StopwatchMain> {
                           context, widget.settings.language);
                       _stopwatchController
                           .add(_getTimeValues(TimerState.updateValue, null));
+                      
+                      setState(() {
+                        _speakIndex = widget.settings.speak ? 0 : 1; 
+                      });
                     },
                   ),
                 ),
@@ -170,7 +217,11 @@ class StopwatchMainState extends State<StopwatchMain> {
           _buttonIndex = 0;
         });
         break;
-      default:
+      case StopwatchButtonAction.pauseLongPress:
+        _vibrateButton();
+        _stopwatchController.add(_getTimeValues(TimerState.reset, 0));
+        _stopwatchController.add(_getTimeValues(TimerState.start, null));
+        break;
     }
   }
 
@@ -196,7 +247,7 @@ class StopwatchMainState extends State<StopwatchMain> {
     _vibrateButton();
     if (_showHelp) {
       setState(() {
-       _showHelp = false; 
+        _showHelp = false;
       });
       return false;
     } else {

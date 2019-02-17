@@ -1,8 +1,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:talking_stopwatch/helpers/db_helpers.dart';
+import 'package:talking_stopwatch/helpers/db_sql_create.dart';
 
 class SettingsData {
   static SharedPreferences preferences;
 
+  String id;
   int interval;
   bool keepScreenOn;
   bool vibrate;
@@ -12,174 +15,91 @@ class SettingsData {
   String language;
 
   SettingsData(
-      {this.interval = 10,
+      {this.id,
+      this.interval = 10,
       this.keepScreenOn = false,
       this.vibrate = true,
       this.speak = true,
       this.vibrateAtInterval = false,
-      this.volume = 1.0, this.language = "en"});
+      this.volume = 1.0,
+      this.language = "en"});
 
-  Future<bool> updateLanguage(String language) async {
-    if (preferences == null) {
-      preferences = await SharedPreferences.getInstance();
-    }
-
-    this.language = language;
-    return preferences.setString("talking_language", language);
+  Future<int> save() {
+    id = "settings";
+    return DbHelpers.insert(DbSql.tableSettings, this.toMap());
   }
 
-  Future<bool> updateVolume(double volume) async {
-    if (preferences == null) {
-      preferences = await SharedPreferences.getInstance();
-    }
-
-    this.volume = volume;
-    return preferences.setDouble("talking_volume", volume);
-  }
-
-  Future<bool> updateInterval(int interval) async {
-    if (preferences == null) {
-      preferences = await SharedPreferences.getInstance();
-    }
-
-    this.interval = interval;
-    return preferences.setInt("talking_interval", interval);
-  }
-
-  Future<bool> updateKeepScreenOn(bool keepScreenOn) async {
-    if (preferences == null) {
-      preferences = await SharedPreferences.getInstance();
-    }
-
-    this.keepScreenOn = keepScreenOn;
-    return preferences.setBool("talking_keepscreenon", keepScreenOn);
-  }
-
-  Future<bool> updateVibrate(bool vibrate) async {
-    if (preferences == null) {
-      preferences = await SharedPreferences.getInstance();
-    }
-
-    this.vibrate = vibrate;
-    return preferences.setBool("talking_vibrate", vibrate);
-  }
-
-  Future<bool> updateSpeak(bool speak) async {
-    if (preferences == null) {
-      preferences = await SharedPreferences.getInstance();
-    }
-
-    this.speak = speak;
-    return preferences.setBool("talking_speak", speak);
-  }
-
-  Future<bool> updateVibrateAtInterval(bool vibrateAtInterval) async {
-    if (preferences == null) {
-      preferences = await SharedPreferences.getInstance();
-    }
-
-    this.vibrateAtInterval = vibrateAtInterval;
-    return preferences.setBool("talking_vibrateAtInterval", vibrateAtInterval);
-  }
-
-  static Future<SettingsData> getSettings() async {
-    int interval = 10;
-    bool keepScreenOn = false;
-    bool vibrate = true;
-    bool speak = true;
-    bool vibrateAtInterval = false;
-    double volume = 1.0;
-    String language = "en";
-
-    if (preferences == null) {
-      preferences = await SharedPreferences.getInstance();
-    }
-
-    try {
-      language = preferences.getString("talking_language");
-      if (language == null) {
-        language = "en";
-        await preferences.setString("talking_language", language);
-      }
-    } catch (e) {
-      print(e);
-      await preferences.setString("talking_language", language);
-    }
-
-    try {
-      volume = preferences.getDouble("talking_volume");
-      if (volume == null) {
-        volume = 1.0;
-        await preferences.setDouble("talking_volume", volume);
-      }
-    } catch (e) {
-      print(e);
-      await preferences.setDouble("talking_volume", volume);
-    }
-
-    try {
-      interval = preferences.getInt("talking_interval");
-      if (interval == null) {
-        interval = 10;
-        await preferences.setInt("talking_interval", interval);
-      }
-    } catch (e) {
-      print(e);
-      await preferences.setInt("talking_interval", interval);
-    }
-
-    try {
-      keepScreenOn = preferences.getBool("talking_keepscreenon");
-
-      if (keepScreenOn == null) {
-        keepScreenOn = false;
-        await preferences.setBool("talking_keepscreenon", keepScreenOn);
-      }
-    } catch (e) {
-      print(e);
-      await preferences.setBool("talking_keepscreenon", keepScreenOn);
-    }
-
-    try {
-      vibrate = preferences.getBool("talking_vibrate");
-      if (vibrate == null) {
-        vibrate = true;
-        await preferences.setBool("talking_vibrate", vibrate);
-      }
-    } catch (e) {
-      print(e);
-      await preferences.setBool("talking_vibrate", vibrate);
-    }
-
-    try {
-      speak = preferences.getBool("talking_speak");
-      if (speak == null) {
-        speak = true;
-        await preferences.setBool("talking_speak", speak);
-      }
-    } catch (e) {
-      print(e);
-      await preferences.setBool("talking_speak", speak);
-    }
-
-    try {
-      vibrateAtInterval = preferences.getBool("talking_vibrateAtInterval");
-      if (vibrateAtInterval == null) {
-        vibrateAtInterval = false;
-        await preferences.setBool(
-            "talking_vibrateAtInterval", vibrateAtInterval);
-      }
-    } catch (e) {
-      print(e);
-      await preferences.setBool("talking_vibrateAtInterval", vibrateAtInterval);
-    }
-
+  factory SettingsData.fromMap(Map<String, dynamic> item) {
     return SettingsData(
-        interval: interval,
-        keepScreenOn: keepScreenOn,
-        vibrate: vibrate,
-        speak: speak,
-        vibrateAtInterval: vibrateAtInterval,
-        volume: volume, language: language);
+        id: item["id"],
+        interval: item["interval"],
+        keepScreenOn: item["keepScreenOn"] == 1,
+        vibrate: item["vibrate"] == 1,
+        vibrateAtInterval: item["vibrateAtInterval"] == 1,
+        speak: item["speak"] == 1,
+        volume: item["volume"],
+        language: item["language"]);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "interval": interval,
+      "keepScreenOn": keepScreenOn,
+      "vibrate": vibrate,
+      "vibrateAtInterval": vibrateAtInterval,
+      "speak": speak,
+      "volume": volume,
+      "language": language
+    };
+  }
+
+  Future<int> updateInterval(int interval) async {
+    this.interval = interval;
+    return DbHelpers.updateInterval(id, interval);
+  }
+
+  Future<int> updateKeepScreenOn(bool keepScreenOn) async {
+    this.keepScreenOn = keepScreenOn;
+    return DbHelpers.updateKeepScreenOn(id, keepScreenOn);
+  }
+
+  Future<int> updateVibrate(bool vibrate) async {
+    this.vibrate = vibrate;
+    return DbHelpers.updateVibrate(id, vibrate);
+  }
+
+  Future<int> updateSpeak(bool speak) async {
+    this.speak = speak;
+    return DbHelpers.updateSpeak(id, speak);
+  }
+
+  Future<int> updateVibrateAtInterval(bool vibrateAtInterval) async {
+    this.vibrateAtInterval = vibrateAtInterval;
+    return DbHelpers.updateVibrateAtInterval(id, vibrateAtInterval);
+  }
+
+  Future<int> updateVolume(double volume) async {
+    this.volume = volume;
+    return DbHelpers.updateVolume(id, volume);
+  }
+
+  Future<int> updateLanguage(String language) async {
+    this.language = language;
+    return DbHelpers.updateLanguage(id, language);
+  }
+
+  static Future<SettingsData> getSettings(String languageCode) async {
+    SettingsData settings;
+    List<Map<String, dynamic>> data = await DbHelpers.query(DbSql.tableSettings,
+        where: "id = ?", whereArgs: ["settings"]);
+    if (data.length != 0) {
+      settings = SettingsData.fromMap(data[0]);
+    } else {
+      settings = SettingsData(language: languageCode);
+      await settings.save();
+    }
+
+    return settings;
   }
 }

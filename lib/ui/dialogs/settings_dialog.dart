@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
 import 'package:talking_stopwatch/helpers/system_helpers.dart';
 
@@ -162,7 +162,7 @@ class SettingsDialogState extends State<SettingsDialog> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(right: 9),
-              child: Icon(FontAwesomeIcons.volumeUp,
+              child: Icon(MdiIcons.volumeHigh,
                   color: Colors.white, size: 20),
             ),
             Text(FlutterI18n.translate(context, "settings.text3"),
@@ -323,7 +323,7 @@ class SettingsDialogState extends State<SettingsDialog> {
             Padding(
               padding: const EdgeInsets.only(right: 5),
               child:
-                  Icon(FontAwesomeIcons.mobile, color: Colors.white, size: 25),
+                  Icon(MdiIcons.cellphoneScreenshot, color: Colors.white, size: 25),
             ),
             Text(FlutterI18n.translate(context, "settings.text5"),
                 style: TextStyle(color: Colors.white, fontSize: 18))
@@ -400,7 +400,7 @@ class SettingsDialogState extends State<SettingsDialog> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: Icon(Icons.volume_up, color: Colors.white, size: 25),
+              child: Icon(MdiIcons.voice, color: Colors.white, size: 25),
             ),
             Text(FlutterI18n.translate(context, "settings.text7"), style: TextStyle(color: Colors.white, fontSize: 18))
           ],

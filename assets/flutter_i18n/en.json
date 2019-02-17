@@ -3,7 +3,8 @@
         "text1": "Settings",
         "text2": "Tap to start stopwatch",
         "text3": "Longpress to reset stopwatch",
-        "text4": "Tap to stop stopwatch"
+        "text4": "Tap to stop stopwatch",
+        "text5": "Longpress to reset stopwatch and start it again"
     },
     "settings": {
         "text1": "Settings",

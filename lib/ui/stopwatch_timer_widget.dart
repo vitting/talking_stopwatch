@@ -75,7 +75,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           widget.flutterTts.setVolume(_volume);
           break;
         case TimerState.start:
-          if (widget.languageCode != "other") {
+          if (widget.languageCode != "other" && _speak) {
             widget.flutterTts.speak(_ttsStarted);
           }
 
@@ -87,7 +87,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           }
           break;
         case TimerState.reset:
-          if (widget.languageCode != "other") {
+          if (widget.languageCode != "other" && _speak) {
             widget.flutterTts.speak(_ttsReset);
           }
 
@@ -103,7 +103,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           });
           break;
         case TimerState.cancel:
-          if (widget.languageCode != "other") {
+          if (widget.languageCode != "other" && _speak) {
             widget.flutterTts.speak(_ttsPaused);
           }
 

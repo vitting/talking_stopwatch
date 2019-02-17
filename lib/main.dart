@@ -9,7 +9,11 @@ import 'package:talking_stopwatch/ui/stopwatch_main.dart';
 void main() async {
   final FlutterTts flutterTts = new FlutterTts();
   String languageCode = await SystemHelpers.getSystemLanguageCode();
-  SettingsData settings = await SettingsData.getSettings();
+  if (languageCode != "da") {
+    languageCode = "en";
+  }
+
+  SettingsData settings = await SettingsData.getSettings(languageCode);
 
   return runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
