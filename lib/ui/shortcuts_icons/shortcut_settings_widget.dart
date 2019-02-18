@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:talking_stopwatch/helpers/common_functions.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
+import 'package:talking_stopwatch/helpers/timer_values.dart';
 import 'package:talking_stopwatch/ui/dialogs/settings_dialog.dart';
-import 'package:talking_stopwatch/ui/stopwatch_timer_widget.dart';
 
 class ShortcutSettings extends StatelessWidget {
   final SettingsData settings;
   final StreamController controller;
 
-  const ShortcutSettings({Key key, this.settings, this.controller}) : super(key: key);
+  const ShortcutSettings({Key key, this.settings, this.controller})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -24,11 +25,10 @@ class ShortcutSettings extends StatelessWidget {
         icon: Icon(Icons.settings),
         color: Colors.white,
         onPressed: () async {
-          vibrateButton(settings);
+          vibrateButton(settings.vibrate);
           await _showSettings(context);
           await FlutterI18n.refresh(context, settings.language);
-          controller.add(
-              getTimeValues(TimerState.updateValue, null, settings));
+          controller.add(getTimeValues(TimerState.updateValue, null, settings));
         },
       ),
     );

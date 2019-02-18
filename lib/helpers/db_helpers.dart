@@ -4,9 +4,10 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:talking_stopwatch/helpers/db_sql_create.dart';
+import 'package:talking_stopwatch/helpers/settings_data.dart';
 
 final String dbName = "talkingstopwatchsettings.db";
-final int dbVersion = 1;
+final int dbVersion = 2;
 
 class DbHelpers {
   static final _lock = new Lock();
@@ -16,7 +17,7 @@ class DbHelpers {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, dbName);
 
-    // Sqflite.setDebugModeOn();
+    Sqflite.setDebugModeOn();
 
     if (_db == null || !_db.isOpen) {
       try {
@@ -38,17 +39,27 @@ class DbHelpers {
               print("DB ONCREATE ERROR: $error");
             }
           }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
-            try {
-              print("ONUPGRADE CREATION TABLES");
-              await db.execute("${DbSql.createSettings}");
-            } catch (error) {
-              print("DB ONUPGRADE ERROR: $error");
+            print("ONUPGRADE: $oldVersion | $newVersion");
+            if (oldVersion == 1 && newVersion == 2) {
+              try {
+                List<Map<String, dynamic>> data = await db.query(
+                    DbSql.tableSettings,
+                    where: "id = ?",
+                    whereArgs: ["settings"]);
+                await db.execute("${DbSql.dropSettings}");
+                await db.execute("${DbSql.createSettings}");
+
+                if (data.length != 0) {
+                  SettingsData settings = SettingsData.fromMap(data[0]);
+                  db.insert(DbSql.tableSettings, settings.toMap());
+                }
+              } catch (error) {
+                print("DB ONUPGRADE ERROR: $error");
+              }
             }
           }, onOpen: (Database db) async {
             try {
               print("ONOPEN");
-              // await db.execute("${DbSql.dropSettings}");
-              // await db.execute("${DbSql.createSettings}");
             } catch (error) {
               print("DB ONOPEN ERROR: $error");
             }
@@ -124,7 +135,15 @@ class DbHelpers {
         [speak, id]);
   }
 
-  static Future<int> updateVibrateAtInterval(String id, bool vibrateAtInterval) async {
+  static Future<int> updateSpeakShort(String id, bool speakShort) async {
+    Database dbCon = await db;
+    return dbCon.rawUpdate(
+        "UPDATE ${DbSql.tableSettings} SET '${DbSql.colSpeakShort}' = ? WHERE ${DbSql.colId} = ?",
+        [speakShort, id]);
+  }
+
+  static Future<int> updateVibrateAtInterval(
+      String id, bool vibrateAtInterval) async {
     Database dbCon = await db;
     return dbCon.rawUpdate(
         "UPDATE ${DbSql.tableSettings} SET '${DbSql.colVibrateAtInterval}' = ? WHERE ${DbSql.colId} = ?",

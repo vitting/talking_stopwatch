@@ -15,10 +15,13 @@ void main() async {
 
   SettingsData settings = await SettingsData.getSettings(languageCode);
 
+  if (settings.keepScreenOn) {
+    SystemHelpers.setScreenOn();
+  }
+
   return runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: StopwatchMain(
-        languageCode: languageCode, flutterTts: flutterTts, settings: settings),
+    home: StopwatchMain(flutterTts: flutterTts, settings: settings),
     localizationsDelegates: [
       FlutterI18nDelegate(false, settings.language),
       GlobalMaterialLocalizations.delegate,

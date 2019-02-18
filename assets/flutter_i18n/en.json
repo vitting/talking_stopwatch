@@ -17,7 +17,8 @@
         "text5": "Don't turnoff screen",
         "text6": "Vibrate on tap",
         "text7": "Speach",
-        "text8": "Vibrate at interval"
+        "text8": "Vibrate at interval",
+        "text9": "Short pronunciation"
     },
     "exit": {
         "text1": "Do you want to exit?",
@@ -25,7 +26,7 @@
         "text3": "NO"
     },
     "shortcutHelp": {
-        "text": "Show help"
+        "text1": "Show help"
     },
     "shortcutInterval": {
         "text1": "Change interval to 30 seconds",
@@ -41,5 +42,14 @@
     "shortcutVolume": {
         "text1": "Increase volume",
         "text2": "Decrease volume"
+    },
+    "stopwatchWidget": {
+        "text1": "minutes",
+        "text2": "minute",
+        "text3": "seconds",
+        "text4": "Stopwatch started",
+        "text5": "Stopwatch paused",
+        "text6": "Stopwatch reset",
+        "text7": "and"
     }
 }

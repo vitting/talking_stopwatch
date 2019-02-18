@@ -5,7 +5,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:talking_stopwatch/helpers/common_functions.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
-import 'package:talking_stopwatch/ui/stopwatch_timer_widget.dart';
+import 'package:talking_stopwatch/helpers/timer_values.dart';
 
 class ShortcutVolume extends StatefulWidget {
   final SettingsData settings;
@@ -43,7 +43,7 @@ class _ShortcutVolumeState extends State<ShortcutVolume> {
             icon: Icon(MdiIcons.volumeLow),
             color: Colors.white,
             onPressed: () async {
-              vibrateButton(widget.settings);
+              vibrateButton(widget.settings.vibrate);
               await widget.settings.updateVolume(0.7);
 
               widget.controller.add(
@@ -61,7 +61,7 @@ class _ShortcutVolumeState extends State<ShortcutVolume> {
             icon: Icon(MdiIcons.volumeMedium),
             color: Colors.white,
             onPressed: () async {
-              vibrateButton(widget.settings);
+              vibrateButton(widget.settings.vibrate);
               await widget.settings.updateVolume(1.0);
 
               widget.controller.add(
@@ -77,9 +77,9 @@ class _ShortcutVolumeState extends State<ShortcutVolume> {
             highlightColor: Colors.blue[800],
             iconSize: 30,
             icon: Icon(MdiIcons.volumeHigh),
-            color: Colors.white,
+            color: Colors.white, /// TODO: Lav speak off ved at lave volume om til longpress og så samle to genveje i en
             onPressed: () async {
-              vibrateButton(widget.settings);
+              vibrateButton(widget.settings.vibrate);
               await widget.settings.updateVolume(0.5);
 
               widget.controller.add(

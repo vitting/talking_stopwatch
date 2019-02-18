@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:talking_stopwatch/helpers/common_functions.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
-import 'package:talking_stopwatch/ui/stopwatch_timer_widget.dart';
+import 'package:talking_stopwatch/helpers/timer_values.dart';
 
 class ShortcutInterval extends StatefulWidget {
   final SettingsData settings;
@@ -49,7 +49,7 @@ class _ShortcutIntervalState extends State<ShortcutInterval> {
             ),
             color: Colors.white,
             onPressed: () async {
-              vibrateButton(widget.settings);
+              vibrateButton(widget.settings.vibrate);
               await widget.settings.updateInterval(30);
 
               widget.controller.add(
@@ -76,7 +76,7 @@ class _ShortcutIntervalState extends State<ShortcutInterval> {
             ),
             color: Colors.white,
             onPressed: () async {
-              vibrateButton(widget.settings);
+              vibrateButton(widget.settings.vibrate);
               await widget.settings.updateInterval(10);
               widget.controller.add(
                   getTimeValues(TimerState.updateValue, null, widget.settings));

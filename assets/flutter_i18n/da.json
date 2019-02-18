@@ -17,7 +17,8 @@
         "text5": "Sluk ikke skærmen",
         "text6": "Vibrer ved tryk",
         "text7": "Tale",
-        "text8": "Vibrer ved interval"
+        "text8": "Vibrer ved interval",
+        "text9": "Kort udtale"
     },
     "exit": {
         "text1": "Vil du afslutte?",
@@ -41,5 +42,14 @@
     "shortcutVolume": {
         "text1": "Forøge lydstyrken",
         "text2": "Formindske lydstyrken"
+    },
+    "stopwatchWidget": {
+        "text1": "minutter",
+        "text2": "minut",
+        "text3": "sekunder",
+        "text4": "Stopur started",
+        "text5": "Stopur på pause",
+        "text6": "Stopur nulstillet",
+        "text7": "og"
     }
 }

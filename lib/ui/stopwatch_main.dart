@@ -5,6 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:talking_stopwatch/helpers/common_functions.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
 import 'package:talking_stopwatch/helpers/system_helpers.dart';
+import 'package:talking_stopwatch/helpers/timer_values.dart';
 import 'package:talking_stopwatch/ui/dialogs/exit_dialog.dart';
 import 'package:talking_stopwatch/ui/dialogs/help_dialog.dart';
 import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_help_widget.dart';
@@ -16,13 +17,10 @@ import 'package:talking_stopwatch/ui/stopwatch_button_widget.dart';
 import 'package:talking_stopwatch/ui/stopwatch_timer_widget.dart';
 
 class StopwatchMain extends StatefulWidget {
-  static final String routename = "stopmatchmain";
-  final String languageCode;
   final FlutterTts flutterTts;
   final SettingsData settings;
 
-  const StopwatchMain(
-      {Key key, this.languageCode = "en", this.flutterTts, this.settings})
+  const StopwatchMain({Key key, this.flutterTts, this.settings})
       : super(key: key);
 
   @override
@@ -35,35 +33,7 @@ class StopwatchMainState extends State<StopwatchMain> {
   final StreamController<TimerValues> _stopwatchController =
       StreamController<TimerValues>.broadcast();
   int _buttonIndex = 0;
-  String _languageCode = "en";
   bool _showHelp = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _languageCode = widget.languageCode;
-
-    initSettings();
-  }
-
-  void initSettings() async {
-    if (widget.settings.keepScreenOn) {
-      SystemHelpers.setScreenOn();
-    }
-
-    if (widget.settings.language == "da" &&
-        await widget.flutterTts.isLanguageAvailable("da-DK")) {
-      widget.flutterTts.setLanguage("da-DK");
-    } else {
-      if (await widget.flutterTts.isLanguageAvailable("en-US")) {
-        widget.flutterTts.setLanguage("en-US");
-      } else {
-        _languageCode = "other";
-      }
-    }
-
-    await widget.flutterTts.setVolume(widget.settings.volume);
-  }
 
   @override
   void dispose() {
@@ -90,7 +60,7 @@ class StopwatchMainState extends State<StopwatchMain> {
                     children: <Widget>[
                       StopwatchWidget(
                         timeStream: _stopwatchController.stream,
-                        languageCode: _languageCode,
+                        settings: widget.settings,
                         flutterTts: widget.flutterTts,
                       ),
                       SizedBox(
@@ -123,7 +93,7 @@ class StopwatchMainState extends State<StopwatchMain> {
                 ),
                 ShortcutHelp(
                   onPressed: () {
-                    vibrateButton(widget.settings);
+                    vibrateButton(widget.settings.vibrate);
 
                     setState(() {
                       _showHelp = !_showHelp;
@@ -132,7 +102,7 @@ class StopwatchMainState extends State<StopwatchMain> {
                 ),
                 _showHelp
                     ? HelpDialog(onTap: () {
-                        vibrateButton(widget.settings);
+                        vibrateButton(widget.settings.vibrate);
                         setState(() {
                           _showHelp = false;
                         });
@@ -145,7 +115,7 @@ class StopwatchMainState extends State<StopwatchMain> {
   void _buttonAction(StopwatchButtonAction action) {
     switch (action) {
       case StopwatchButtonAction.playTap:
-        vibrateButton(widget.settings);
+        vibrateButton(widget.settings.vibrate);
         _stopwatchController
             .add(getTimeValues(TimerState.start, null, widget.settings));
         setState(() {
@@ -153,12 +123,12 @@ class StopwatchMainState extends State<StopwatchMain> {
         });
         break;
       case StopwatchButtonAction.playLongPress:
-        vibrateButton(widget.settings);
+        vibrateButton(widget.settings.vibrate);
         _stopwatchController
             .add(getTimeValues(TimerState.reset, 0, widget.settings));
         break;
       case StopwatchButtonAction.pauseTap:
-        vibrateButton(widget.settings);
+        vibrateButton(widget.settings.vibrate);
         _stopwatchController
             .add(getTimeValues(TimerState.cancel, 0, widget.settings));
         setState(() {
@@ -166,7 +136,7 @@ class StopwatchMainState extends State<StopwatchMain> {
         });
         break;
       case StopwatchButtonAction.pauseLongPress:
-        vibrateButton(widget.settings);
+        vibrateButton(widget.settings.vibrate);
         _stopwatchController
             .add(getTimeValues(TimerState.reset, 0, widget.settings));
         _stopwatchController
@@ -176,7 +146,7 @@ class StopwatchMainState extends State<StopwatchMain> {
   }
 
   Future<bool> _willPop(BuildContext context) async {
-    vibrateButton(widget.settings);
+    vibrateButton(widget.settings.vibrate);
     if (_showHelp) {
       setState(() {
         _showHelp = false;
