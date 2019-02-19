@@ -22,8 +22,8 @@
     },
     "exit": {
         "text1": "Do you want to exit?",
-        "text2": "YES",
-        "text3": "NO"
+        "text2": "Yes",
+        "text3": "No"
     },
     "shortcutHelp": {
         "text1": "Show help"
@@ -39,9 +39,9 @@
         "text1": "minutes",
         "text2": "minute",
         "text3": "seconds",
-        "text4": "Stopwatch started",
-        "text5": "Stopwatch paused",
-        "text6": "Stopwatch reset",
+        "text4": "Start",
+        "text5": "Pause",
+        "text6": "Reset",
         "text7": "and"
     }
 }

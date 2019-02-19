@@ -49,7 +49,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           _setSettings(widget.settings);
           break;
         case TimerState.start:
-          if (widget.settings.speak || !widget.settings.speakShort) {
+          if (widget.settings.speak && !widget.settings.speakShort) {
             widget.flutterTts.speak(_ttsStarted);
           }
 
@@ -61,7 +61,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           }
           break;
         case TimerState.reset:
-          if (widget.settings.speak || !widget.settings.speakShort) {
+          if (widget.settings.speak && !widget.settings.speakShort) {
             widget.flutterTts.speak(_ttsReset);
           }
 
@@ -77,7 +77,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           });
           break;
         case TimerState.cancel:
-          if (widget.settings.speak || !widget.settings.speakShort) {
+          if (widget.settings.speak && !widget.settings.speakShort) {
             widget.flutterTts.speak(_ttsPaused);
           }
 
