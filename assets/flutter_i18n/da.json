@@ -22,8 +22,8 @@
     },
     "exit": {
         "text1": "Vil du afslutte?",
-        "text2": "JA",
-        "text3": "NEJ"
+        "text2": "Ja",
+        "text3": "Nej"
     },
     "shortcutHelp": {
         "text1": "Vis hjælp"

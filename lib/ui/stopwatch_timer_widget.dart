@@ -9,14 +9,12 @@ import 'package:talking_stopwatch/helpers/timer_values.dart';
 
 class StopwatchWidget extends StatefulWidget {
   final Stream<TimerValues> timeStream;
-  final String languageCode;
   final SettingsData settings;
   final FlutterTts flutterTts;
 
   const StopwatchWidget(
       {Key key,
       this.timeStream,
-      this.languageCode,
       this.flutterTts,
       this.settings})
       : super(key: key);
@@ -47,14 +45,14 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   @override
   void initState() {
     super.initState();
-
+    
     _setSettings(
         widget.settings.interval,
         widget.settings.vibrateAtInterval,
         widget.settings.speak,
         widget.settings.speakShort,
         widget.settings.volume,
-        widget.languageCode);
+        widget.settings.language);
 
     widget.timeStream.listen((TimerValues item) {
       switch (item.timerState) {
