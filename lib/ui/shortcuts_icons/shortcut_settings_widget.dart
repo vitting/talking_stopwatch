@@ -28,7 +28,7 @@ class ShortcutSettings extends StatelessWidget {
           vibrateButton(settings.vibrate);
           await _showSettings(context);
           await FlutterI18n.refresh(context, settings.language);
-          controller.add(getTimeValues(TimerState.updateValue, null, settings));
+          controller.add(getTimeValues(TimerState.updateValue));
         },
       ),
     );

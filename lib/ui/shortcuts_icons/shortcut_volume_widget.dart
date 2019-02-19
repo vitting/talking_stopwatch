@@ -59,7 +59,7 @@ class _ShortcutVolumeState extends State<ShortcutVolume> {
           }
 
           widget.controller.add(
-              getTimeValues(TimerState.updateValue, null, widget.settings));
+              getTimeValues(TimerState.updateValue));
 
           setState(() {
             _volumeIndex = index;
@@ -80,7 +80,7 @@ class _ShortcutVolumeState extends State<ShortcutVolume> {
                   await widget.settings.updateVolume(0.7);
 
                   widget.controller.add(getTimeValues(
-                      TimerState.updateValue, null, widget.settings));
+                      TimerState.updateValue));
 
                   setState(() {
                     _volumeIndex = 1;
@@ -101,7 +101,7 @@ class _ShortcutVolumeState extends State<ShortcutVolume> {
                   await widget.settings.updateVolume(1.0);
 
                   widget.controller.add(getTimeValues(
-                      TimerState.updateValue, null, widget.settings));
+                      TimerState.updateValue));
 
                   setState(() {
                     _volumeIndex = 2;
@@ -122,7 +122,7 @@ class _ShortcutVolumeState extends State<ShortcutVolume> {
                   await widget.settings.updateVolume(0.5);
 
                   widget.controller.add(getTimeValues(
-                      TimerState.updateValue, null, widget.settings));
+                      TimerState.updateValue));
 
                   setState(() {
                     _volumeIndex = 0;

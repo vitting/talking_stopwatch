@@ -53,7 +53,7 @@ class _ShortcutIntervalState extends State<ShortcutInterval> {
               await widget.settings.updateInterval(30);
 
               widget.controller.add(
-                  getTimeValues(TimerState.updateValue, null, widget.settings));
+                  getTimeValues(TimerState.updateValue));
 
               setState(() {
                 _intervalIndex = 1;
@@ -79,7 +79,7 @@ class _ShortcutIntervalState extends State<ShortcutInterval> {
               vibrateButton(widget.settings.vibrate);
               await widget.settings.updateInterval(10);
               widget.controller.add(
-                  getTimeValues(TimerState.updateValue, null, widget.settings));
+                  getTimeValues(TimerState.updateValue));
 
               setState(() {
                 _intervalIndex = 0;

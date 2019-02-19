@@ -46,19 +46,12 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   void initState() {
     super.initState();
     
-    _setSettings(
-        widget.settings.interval,
-        widget.settings.vibrateAtInterval,
-        widget.settings.speak,
-        widget.settings.speakShort,
-        widget.settings.volume,
-        widget.settings.language);
+    _setSettings(widget.settings);
 
     widget.timeStream.listen((TimerValues item) {
       switch (item.timerState) {
         case TimerState.updateValue:
-          _setSettings(item.interval, item.vibrate, item.speak, item.speakShort,
-              item.volume, item.language);
+          _setSettings(widget.settings);
           break;
         case TimerState.start:
           if (_speak) {
@@ -184,15 +177,14 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
     }
   }
 
-  void _setSettings(int interval, bool vibrate, bool speak, bool speakShort,
-      double volume, String language) async {
-    _interval = interval;
-    _vibrate = vibrate;
-    _speak = speak;
-    _speakShort = speakShort;
-    _volume = volume;
+  void _setSettings(SettingsData settings) async {
+    _interval = settings.interval;
+    _vibrate = settings.vibrateAtInterval;
+    _speak = settings.speak;
+    _speakShort = settings.speakShort;
+    _volume = settings.volume;
     await widget.flutterTts.setVolume(_volume);
-    await _setLanguage(language);
+    await _setLanguage(settings.language);
   }
 
   Future<void> _setLanguage(String language) async {

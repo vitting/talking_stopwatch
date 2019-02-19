@@ -112,7 +112,7 @@ class StopwatchMainState extends State<StopwatchMain> {
       case StopwatchButtonAction.playTap:
         vibrateButton(widget.settings.vibrate);
         _stopwatchController
-            .add(getTimeValues(TimerState.start, null, widget.settings));
+            .add(getTimeValues(TimerState.start));
         setState(() {
           _buttonIndex = 1;
         });
@@ -120,12 +120,12 @@ class StopwatchMainState extends State<StopwatchMain> {
       case StopwatchButtonAction.playLongPress:
         vibrateButton(widget.settings.vibrate);
         _stopwatchController
-            .add(getTimeValues(TimerState.reset, 0, widget.settings));
+            .add(getTimeValues(TimerState.reset, 0));
         break;
       case StopwatchButtonAction.pauseTap:
         vibrateButton(widget.settings.vibrate);
         _stopwatchController
-            .add(getTimeValues(TimerState.cancel, 0, widget.settings));
+            .add(getTimeValues(TimerState.cancel, 0));
         setState(() {
           _buttonIndex = 0;
         });
@@ -133,9 +133,9 @@ class StopwatchMainState extends State<StopwatchMain> {
       case StopwatchButtonAction.pauseLongPress:
         vibrateButton(widget.settings.vibrate);
         _stopwatchController
-            .add(getTimeValues(TimerState.reset, 0, widget.settings));
+            .add(getTimeValues(TimerState.reset, 0));
         _stopwatchController
-            .add(getTimeValues(TimerState.start, null, widget.settings));
+            .add(getTimeValues(TimerState.start));
         break;
     }
   }
