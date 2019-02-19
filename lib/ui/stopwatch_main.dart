@@ -11,7 +11,6 @@ import 'package:talking_stopwatch/ui/dialogs/help_dialog.dart';
 import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_help_widget.dart';
 import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_interval_widget.dart';
 import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_settings_widget.dart';
-import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_speak_widget.dart';
 import 'package:talking_stopwatch/ui/shortcuts_icons/shortcut_volume_widget.dart';
 import 'package:talking_stopwatch/ui/stopwatch_button_widget.dart';
 import 'package:talking_stopwatch/ui/stopwatch_timer_widget.dart';
@@ -64,7 +63,7 @@ class StopwatchMainState extends State<StopwatchMain> {
                         flutterTts: widget.flutterTts,
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 50,
                       ),
                       StopwatchButton(
                         buttonIndex: _buttonIndex,
@@ -74,10 +73,6 @@ class StopwatchMainState extends State<StopwatchMain> {
                       ),
                     ],
                   ),
-                ),
-                ShortcutSpeak(
-                  controller: _stopwatchController,
-                  settings: widget.settings,
                 ),
                 ShortcutInterval(
                   controller: _stopwatchController,

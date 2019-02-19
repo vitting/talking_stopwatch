@@ -5,7 +5,7 @@
         "text3": "Hold inde for at nulstille stopuret",
         "text4": "Tryk for stoppe stopuret",
         "text5": "Hold inde for at nulstille stopuret og starte det igen",
-        "text6": "Slå oplæsning af tiden til/fra",
+        "text6": "Holde inde for at slå oplæsning af tiden til/fra",
         "text7": "Skift oplæsnings interval iimellem 10s/30s",
         "text8": "Skift oplæsnings lydstyrke imellem lav/mellem/høj"
     },
@@ -34,14 +34,6 @@
     },
     "shortcutSettings": {
         "text1": "Vis indstillinger"
-    },
-    "shortcutSpeak": {
-        "text1": "Slå tale fra",
-        "text2": "Slå tale til"
-    },
-    "shortcutVolume": {
-        "text1": "Forøge lydstyrken",
-        "text2": "Formindske lydstyrken"
     },
     "stopwatchWidget": {
         "text1": "minutter",
