@@ -51,10 +51,11 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
                 String body = call.argument("body");
                 String actionButtonToShow = call.argument("actionButtonToShow");
                 String buttonText = call.argument("buttonText");
+                String button2Text = call.argument("button2Text");
 
                 try {
                     boolean showPlay = actionButtonToShow != null && actionButtonToShow.equals("play");
-                    builder = buildNotification(title, body, buttonText, showPlay);
+                    builder = buildNotification(title, body, buttonText, button2Text, showPlay);
                     mNotificationManager.notify(0, builder.build());
                 } catch (NullPointerException e) {
                     result.error("Parameter error", null, e);
@@ -108,24 +109,34 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
         }
     }
 
-    private NotificationCompat.Builder buildNotification(String title, String body, String buttonText, boolean showPlayButton) {
+    private NotificationCompat.Builder buildNotification(String title, String body, String buttonText, String button2Text, boolean showPlayButton) {
         // On Tap show activity
         Intent intent = new Intent(this, this.getClass());
         intent.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        // Action button click
-        Intent buttonPressIntent = new Intent(this, NotificationActionBroardcastReceiver.class);
-        buttonPressIntent
-                .setAction("buttonPress")
-                .putExtra("BUTTONSTATUS", showPlayButton ? "action_play" : "action_pause");
+        // Action button play/pause
+        Intent playPauseIntent = new Intent(this, NotificationActionBroardcastReceiver.class);
+        playPauseIntent
+                .setAction("playPausePress")
+                .putExtra("PLAYPAUSEBUTTONSTATUS", showPlayButton ? "action_play" : "action_pause");
+
+        PendingIntent playPausePendingIntent =
+                PendingIntent.getBroadcast(this, 0, playPauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Action button play/pause
+        Intent resetIntent = new Intent(this, NotificationActionBroardcastReceiver.class);
+        resetIntent
+                .setAction("resetPress")
+                .putExtra("RESETBUTTONSTATUS", "action_reset");
+
+        PendingIntent resetPendingIntent =
+                PendingIntent.getBroadcast(this, 0, resetIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            buttonPressIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
+            playPauseIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
+            resetIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
         }
-
-        PendingIntent buttonPressPendingIntent =
-                PendingIntent.getBroadcast(this, 0, buttonPressIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(this, NOTIFICATIONCHANNELID)
                 .setOngoing(true)
@@ -138,6 +149,7 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .addAction(showPlayButton ? R.drawable.ic_play : R.drawable.ic_pause, buttonText, buttonPressPendingIntent);
+                .addAction(showPlayButton ? R.drawable.ic_play : R.drawable.ic_pause, buttonText, playPausePendingIntent)
+                .addAction(R.drawable.ic_reset, button2Text, resetPendingIntent);
     }
 }
