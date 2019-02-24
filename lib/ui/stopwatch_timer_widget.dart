@@ -39,7 +39,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   void initState() {
     super.initState();
 
-    _updateNotification("play", "", "");
+    _updateNotification("play", "Start", "Nulstil");
     _setSettings(widget.settings);
 
     widget.timeStream.listen((TimerValues item) {
@@ -75,7 +75,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
             _elapsedTimeSecondsFormatted = "00";
             _elapsedTimeMinutesFormatted = "00";
 
-            _updateNotification("play", "", "");
+            _updateNotification("play", "Start", "Nulstil");
           });
           break;
         case TimerState.cancel:
@@ -88,7 +88,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
             _timer = null;
           }
 
-          _updateNotification("play", "" ,"");
+          _updateNotification("play", "Start", "Nulstil");
           break;
         case TimerState.setTime:
           break;
@@ -139,7 +139,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
       _speakTime(_elapsedTimeMinutes, _elapsedTimeSeconds, vibrate);
     }
 
-    _updateNotification("pause", "", "");
+    _updateNotification("pause", "Pause", "Nulstil");
   }
 
   void _speakTime(int minutes, int seconds, bool vibrate) async {
@@ -178,12 +178,14 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
     }
   }
 
-  void _updateNotification(String actionButtonToShow, String buttonText, String button2Text) async {
+  void _updateNotification(
+      String actionButtonToShow, String buttonText, String button2Text) async {
     await NotificationAction.show(
         "Stopwatch Title",
         "$_elapsedTimeMinutesFormatted:$_elapsedTimeSecondsFormatted",
         actionButtonToShow,
-        buttonText, button2Text);
+        buttonText,
+        button2Text);
   }
 
   void _setSettings(SettingsData settings) async {

@@ -9,6 +9,7 @@ class SettingsData {
   bool speak;
   bool speakShort;
   bool vibrateAtInterval;
+  bool showNotification;
   double volume;
   String language;
 
@@ -20,6 +21,7 @@ class SettingsData {
       this.speak = true,
       this.speakShort = false,
       this.vibrateAtInterval = false,
+      this.showNotification = false,
       this.volume = 1.0,
       this.language = "en"});
 
@@ -37,6 +39,7 @@ class SettingsData {
         vibrateAtInterval: item["vibrateAtInterval"] == 1,
         speak: item["speak"] == 1,
         speakShort: item["speakShort"] == null ? false : item["speakShort"] == 1,
+        showNotification: item["showNotification"] == null ? false : item["showNotification"] == 1,
         volume: item["volume"],
         language: item["language"]);
   }
@@ -51,6 +54,7 @@ class SettingsData {
       "speak": speak,
       "speakShort": speakShort,
       "volume": volume,
+      "showNotification": showNotification,
       "language": language
     };
   }
@@ -83,6 +87,11 @@ class SettingsData {
   Future<int> updateVibrateAtInterval(bool vibrateAtInterval) async {
     this.vibrateAtInterval = vibrateAtInterval;
     return DbHelpers.updateVibrateAtInterval(id, vibrateAtInterval);
+  }
+
+  Future<int> updateShowNotification(bool showNotification) async {
+    this.showNotification = showNotification;
+    return DbHelpers.updateShowNotification(id, showNotification);
   }
 
   Future<int> updateVolume(double volume) async {

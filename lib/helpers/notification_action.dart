@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-
 class NotificationAction {
   static const MethodChannel _methodeChannel =
       const MethodChannel("talking.stopwatch.dk/notification");

@@ -34,15 +34,15 @@ class StopwatchMainState extends State<StopwatchMain> {
       StreamController<TimerValues>.broadcast();
   int _buttonIndex = 0;
   bool _showHelp = false;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     NotificationAction.nofiticationEventStream.listen((String value) {
       switch (value) {
         case "action_play":
-          _buttonAction(StopwatchButtonAction.playTap);    
+          _buttonAction(StopwatchButtonAction.playTap);
           break;
         case "action_pause":
           _buttonAction(StopwatchButtonAction.pauseTap);
@@ -80,10 +80,9 @@ class StopwatchMainState extends State<StopwatchMain> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       StopwatchWidget(
-                        timeStream: _stopwatchController.stream,
-                        settings: widget.settings,
-                        flutterTts: widget.flutterTts
-                      ),
+                          timeStream: _stopwatchController.stream,
+                          settings: widget.settings,
+                          flutterTts: widget.flutterTts),
                       SizedBox(
                         height: 50,
                       ),
@@ -141,6 +140,9 @@ class StopwatchMainState extends State<StopwatchMain> {
       case StopwatchButtonAction.playLongPress:
         vibrateButton(widget.settings.vibrate);
         _stopwatchController.add(getTimeValues(TimerState.reset, 0));
+        setState(() {
+          _buttonIndex = 0;
+        });
         break;
       case StopwatchButtonAction.pauseTap:
         vibrateButton(widget.settings.vibrate);

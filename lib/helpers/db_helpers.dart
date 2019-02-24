@@ -7,7 +7,7 @@ import 'package:talking_stopwatch/helpers/db_sql_create.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
 
 final String dbName = "talkingstopwatchsettings.db";
-final int dbVersion = 2;
+final int dbVersion = 3;
 
 class DbHelpers {
   static final _lock = new Lock();
@@ -40,7 +40,7 @@ class DbHelpers {
             }
           }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
             print("ONUPGRADE: $oldVersion | $newVersion");
-            if (oldVersion == 1 && newVersion == 2) {
+            if (oldVersion != newVersion) {
               try {
                 List<Map<String, dynamic>> data = await db.query(
                     DbSql.tableSettings,
@@ -148,6 +148,13 @@ class DbHelpers {
     return dbCon.rawUpdate(
         "UPDATE ${DbSql.tableSettings} SET '${DbSql.colVibrateAtInterval}' = ? WHERE ${DbSql.colId} = ?",
         [vibrateAtInterval, id]);
+  }
+
+  static Future<int> updateShowNotification(String id, bool showNotification) async {
+    Database dbCon = await db;
+    return dbCon.rawUpdate(
+        "UPDATE ${DbSql.tableSettings} SET '${DbSql.colShowNotification}' = ? WHERE ${DbSql.colId} = ?",
+        [showNotification, id]);
   }
 
   static Future<int> updateVolume(String id, double volume) async {

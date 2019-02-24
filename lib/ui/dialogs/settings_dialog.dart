@@ -39,6 +39,19 @@ class SettingsDialog extends StatelessWidget {
           children: <Widget>[
             SettingsLanguageWidget(settings: settings),
             SizedBox(height: 20),
+
+            /// Show notification
+            SettingsSwitchRowWidget(
+              icon: Icons.notifications,
+              text: FlutterI18n.translate(context, "settings.text10"),
+              vibrate: settings.vibrate,
+              value: settings.showNotification,
+              onChanged: (bool value) async {
+                await settings.updateShowNotification(value);
+              },
+            ),
+            SizedBox(height: 20),
+
             /// SpeakShort
             SettingsSwitchRowWidget(
               icon: MdiIcons.voice,

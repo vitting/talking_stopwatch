@@ -18,7 +18,8 @@
         "text6": "Vibrate on tap",
         "text7": "Speach",
         "text8": "Vibrate at interval",
-        "text9": "Short pronunciation"
+        "text9": "Short pronunciation",
+        "text10": "Show notification"
     },
     "exit": {
         "text1": "Do you want to exit?",
