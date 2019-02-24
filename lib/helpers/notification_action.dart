@@ -8,9 +8,16 @@ class NotificationAction {
 
   static Stream<dynamic> _nofiticationEventStream;
 
-  static Future<String> show(String title, String text, String action) async {
+  /// buttonAction = play | pause
+  static Future<String> show(String title, String body, String actionButtonToShow, String buttonText) async {
     try {
-      var result = await _methodeChannel.invokeMethod("showNotification", [title, text, action]);
+      var result = await _methodeChannel.invokeMethod("showNotification", {
+        "title":title,
+        "body":body,
+        "actionButtonToShow":actionButtonToShow,
+        "buttonText":buttonText
+      });
+      
       return result.toString();
     } catch (e) {
       print(e);

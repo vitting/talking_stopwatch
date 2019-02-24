@@ -7,11 +7,12 @@ import android.content.Intent;
 public class NotificationActionBroardcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction() == "buttonPress") {
+        if (intent.getAction().equals("buttonPress")) {
             if (MainActivity.mEventSink != null) {
-                MainActivity.mEventSink.success("SHIT DET VIRKER");
-            }
+                String currentButtonAction = intent.getStringExtra("BUTTONSTATUS");
 
+                MainActivity.mEventSink.success(currentButtonAction);
+            }
         }
     }
 }

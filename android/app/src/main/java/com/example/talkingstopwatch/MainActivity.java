@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
-import java.util.ArrayList;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import io.flutter.app.FlutterActivity;
@@ -25,8 +23,9 @@ import static android.app.Notification.EXTRA_NOTIFICATION_ID;
 public class MainActivity extends FlutterActivity implements MethodCallHandler, StreamHandler {
     private static final String CHANNEL = "talking.stopwatch.dk/notification";
     private static final String EVENTCHANNEL = "talking.stopwatch.dk/stream";
-    private static  final String NOTIFICATIONCHANNELID = "talking.stopwatch.dk/notification";
+    private static final String NOTIFICATIONCHANNELID = "talking.stopwatch.dk/notification";
     public static EventSink mEventSink;
+    private NotificationManagerCompat mNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,36 +42,40 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-        if (call.method.equals("showNotification")) {
-            NotificationCompat.Builder builder;
-            ArrayList<String> list = (ArrayList<String>) call.arguments;
+        switch (call.method) {
+            case "showNotification":
+                NotificationCompat.Builder builder;
+                String title = call.argument("title");
+                String body = call.argument("body");
+                String actionButtonToShow = call.argument("actionButtonToShow");
+                String buttonText = call.argument("buttonText");
 
-            if (list.get(2).equals("play")) {
-                builder = buildNotification(list.get(0), list.get(1), true);
-            } else {
-                builder = buildNotification(list.get(0), list.get(1), false);
-            }
+                try {
+                    boolean showPlay = actionButtonToShow != null && actionButtonToShow.equals("play");
+                    builder = buildNotification(title, body, buttonText, showPlay);
+                    mNotificationManager.notify(0, builder.build());
+                } catch (NullPointerException e) {
+                    result.error("Parameter error", null, e);
+                }
 
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.notify(0, builder.build());
+                result.success(true);
+                break;
+            case "cancelNotification":
+                mNotificationManager.cancel(0);
+                result.success(true);
+                break;
+            case "initializeNotification":
+                createNotificationChannel();
+                if (mNotificationManager == null) {
+                    mNotificationManager = NotificationManagerCompat.from(this);
+                }
 
-            result.success("OKAY");
-            if (mEventSink != null) {
-                mEventSink.success("TESTER EN STREAM");
-            }
-        }
-
-        if (call.method.equals("cancelNotification")) {
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.cancel(0);
-            result.success("CANCEL");
-        }
-
-        if (call.method.equals("initializeNotification")) {
-            result.success("INITIALIZED");
+                result.success(true);
+                break;
+            default:
+                result.success(false);
         }
     }
 
@@ -88,13 +91,14 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
         mEventSink = null;
     }
 
+    // TODO: Set this on init
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(NOTIFICATIONCHANNELID, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
@@ -104,7 +108,7 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
         }
     }
 
-    private NotificationCompat.Builder buildNotification(String title, String text, boolean play) {
+    private NotificationCompat.Builder buildNotification(String title, String body, String buttonText, boolean showPlayButton) {
         // On Tap show activity
         Intent intent = new Intent(this, this.getClass());
         intent.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
@@ -112,26 +116,28 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
 
         // Action button click
         Intent buttonPressIntent = new Intent(this, NotificationActionBroardcastReceiver.class);
-        buttonPressIntent.setAction("buttonPress");
+        buttonPressIntent
+                .setAction("buttonPress")
+                .putExtra("BUTTONSTATUS", showPlayButton ? "action_play" : "action_pause");
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             buttonPressIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
         }
-        PendingIntent buttonPressPendingIntent =
-                PendingIntent.getBroadcast(this, 0, buttonPressIntent, 0);
 
-        createNotificationChannel();
+        PendingIntent buttonPressPendingIntent =
+                PendingIntent.getBroadcast(this, 0, buttonPressIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(this, NOTIFICATIONCHANNELID)
                 .setOngoing(true)
                 .setSmallIcon(R.mipmap.notification_icon)
                 .setContentTitle(title)
-                .setContentText(text)
+                .setContentText(body)
                 .setSound(null)
                 .setVibrate(null)
                 .setShowWhen(false)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .addAction(play ? R.drawable.ic_play : R.drawable.ic_pause, "Trykmig", buttonPressPendingIntent);
+                .addAction(showPlayButton ? R.drawable.ic_play : R.drawable.ic_pause, buttonText, buttonPressPendingIntent);
     }
 }

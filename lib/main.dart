@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:talking_stopwatch/helpers/notification_action.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
 import 'package:talking_stopwatch/helpers/system_helpers.dart';
 import 'package:talking_stopwatch/ui/stopwatch_main.dart';
@@ -18,6 +19,8 @@ void main() async {
   if (settings.keepScreenOn) {
     SystemHelpers.setScreenOn();
   }
+
+  await NotificationAction.initialize();
 
   return runApp(MaterialApp(
     debugShowCheckedModeBanner: false,

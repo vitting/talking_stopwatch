@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:talking_stopwatch/helpers/common_functions.dart';
 import 'package:talking_stopwatch/helpers/notification_action.dart';
@@ -20,9 +19,8 @@ import 'package:talking_stopwatch/ui/stopwatch_timer_widget.dart';
 class StopwatchMain extends StatefulWidget {
   final FlutterTts flutterTts;
   final SettingsData settings;
-  
-  const StopwatchMain(
-      {Key key, this.flutterTts, this.settings})
+
+  const StopwatchMain({Key key, this.flutterTts, this.settings})
       : super(key: key);
 
   @override
@@ -36,31 +34,26 @@ class StopwatchMainState extends State<StopwatchMain> {
       StreamController<TimerValues>.broadcast();
   int _buttonIndex = 0;
   bool _showHelp = false;
-  int _counter = 0;
-
+  
   @override
   void initState() {
     super.initState();
-    // _initNotification();
-
+    
     NotificationAction.nofiticationEventStream.listen((String value) {
-      if (value == "SHIT DET VIRKER") {
-        NotificationAction.show("Notification Title", (++_counter).toString(), "notplay");
+      switch (value) {
+        case "action_play":
+          _buttonAction(StopwatchButtonAction.playTap);    
+          break;
+        case "action_pause":
+          _buttonAction(StopwatchButtonAction.pauseTap);
+          break;
+        case "action_reset":
+          _buttonAction(StopwatchButtonAction.playLongPress);
+          break;
+        default:
       }
       print(value);
     });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    print("didChangeDependencies");
-  }
-
-  @override
-  void didUpdateWidget(StopwatchMain oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print("didUpdateWidget");
   }
 
   @override
@@ -86,39 +79,10 @@ class StopwatchMainState extends State<StopwatchMain> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      RaisedButton(
-                  child: Text("Show"),
-                  onPressed: () async {
-                    try {
-
-                      String result = await NotificationAction.show("Notification Title", (++_counter).toString(), "play");
-                      bool result2 = await NotificationAction.initialize();
-
-                      print(result);
-                      print(result2);
-                    } on PlatformException catch (e) {}
-
-                    setState(() {});
-                  },
-                ),
-                RaisedButton(
-                  child: Text("Hide"),
-                  onPressed: () async {
-                    try {
-                      String result = await NotificationAction.cancel();
-                      
-                      print(result);
-                      
-                    } on PlatformException catch (e) {}
-
-                    setState(() {});
-                  },
-                ),
                       StopwatchWidget(
                         timeStream: _stopwatchController.stream,
                         settings: widget.settings,
-                        flutterTts: widget.flutterTts,
-                        flutterNotification: null,
+                        flutterTts: widget.flutterTts
                       ),
                       SizedBox(
                         height: 50,
@@ -207,7 +171,7 @@ class StopwatchMainState extends State<StopwatchMain> {
               ExitDialog(settings: widget.settings));
 
       if (exitApp) {
-        // widget.flutterNotification.cancel(0);
+        await NotificationAction.cancel();
       }
 
       return exitApp;
