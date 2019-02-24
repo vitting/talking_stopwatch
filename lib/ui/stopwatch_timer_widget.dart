@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:talking_stopwatch/helpers/settings_data.dart';
 import 'package:talking_stopwatch/helpers/system_helpers.dart';
@@ -11,11 +12,13 @@ class StopwatchWidget extends StatefulWidget {
   final Stream<TimerValues> timeStream;
   final SettingsData settings;
   final FlutterTts flutterTts;
+  final FlutterLocalNotificationsPlugin flutterNotification;
 
   const StopwatchWidget(
       {Key key,
       this.timeStream,
       this.flutterTts,
+      this.flutterNotification,
       this.settings})
       : super(key: key);
   @override
@@ -36,11 +39,12 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   String _ttsPaused = "";
   String _ttsReset = "";
   String _ttsAnd = "";
-  
+
   @override
   void initState() {
     super.initState();
-    
+
+    _updateNotification("");
     _setSettings(widget.settings);
 
     widget.timeStream.listen((TimerValues item) {
@@ -56,7 +60,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           if (_timer == null) {
             _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
               _elapsedTime += 1;
-              formatTime(widget.settings.speak, widget.settings.vibrateAtInterval);
+              _formatTime(
+                  widget.settings.speak, widget.settings.vibrateAtInterval);
             });
           }
           break;
@@ -74,6 +79,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           setState(() {
             _elapsedTimeSecondsFormatted = "00";
             _elapsedTimeMinutesFormatted = "00";
+
+            _updateNotification("");
           });
           break;
         case TimerState.cancel:
@@ -85,6 +92,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
             _timer?.cancel();
             _timer = null;
           }
+
+          _updateNotification("Pause");
           break;
         case TimerState.setTime:
           break;
@@ -112,7 +121,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
     );
   }
 
-  void formatTime(bool speak, bool vibrate) {
+  void _formatTime(bool speak, bool vibrate) {
     setState(() {
       if (_elapsedTime > 59) {
         _elapsedTimeMinutes = (_elapsedTime / 60).floor();
@@ -134,6 +143,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
     if (speak) {
       _speakTime(_elapsedTimeMinutes, _elapsedTimeSeconds, vibrate);
     }
+
+    _updateNotification("Kører");
   }
 
   void _speakTime(int minutes, int seconds, bool vibrate) async {
@@ -170,6 +181,10 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
         }
       }
     }
+  }
+
+  void _updateNotification(String text) async {
+    
   }
 
   void _setSettings(SettingsData settings) async {
