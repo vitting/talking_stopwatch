@@ -37,6 +37,7 @@ class SettingsDialog extends StatelessWidget {
       children: <Widget>[
         Column(
           children: <Widget>[
+            /// Language
             SettingsLanguageWidget(settings: settings),
             SizedBox(height: 20),
 

@@ -8,6 +8,9 @@ import 'package:talking_stopwatch/helpers/settings_data.dart';
 import 'package:talking_stopwatch/helpers/system_helpers.dart';
 import 'package:talking_stopwatch/helpers/timer_values.dart';
 
+enum StopwatchStatus { started, stopped }
+enum StopwatchNotificationButtonStatus { start, pause }
+
 class StopwatchWidget extends StatefulWidget {
   final Stream<TimerValues> timeStream;
   final SettingsData settings;
@@ -39,12 +42,16 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   String _ttsPaused = "";
   String _ttsReset = "";
   String _ttsAnd = "";
+  String _notificationButton1TextStart = "";
+  String _notificationButton1TextPause = "";
+  String _notificationButton2Text = "";
+  String _notificationTitle = "";
+  StopwatchStatus _stopwatchStatus =StopwatchStatus.stopped;
 
   @override
   void initState() {
     super.initState();
 
-    _updateNotification("play", "Start", "Nulstil");
     _setSettings(widget.settings);
 
     widget.timeStream.listen((TimerValues item) {
@@ -53,6 +60,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           _setSettings(widget.settings);
           break;
         case TimerState.start:
+          _stopwatchStatus = StopwatchStatus.started;
+
           if (widget.settings.speak && !widget.settings.speakShort) {
             widget.flutterTts.speak(_ttsStarted);
           }
@@ -66,6 +75,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
           }
           break;
         case TimerState.reset:
+          _stopwatchStatus = StopwatchStatus.stopped;
+
           if (widget.settings.speak && !widget.settings.speakShort) {
             widget.flutterTts.speak(_ttsReset);
           }
@@ -80,10 +91,13 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
             _elapsedTimeSecondsFormatted = "00";
             _elapsedTimeMinutesFormatted = "00";
 
-            _updateNotification("play", "Start", "Nulstil");
+            _updateNotification(StopwatchNotificationButtonStatus.start,
+                StopwatchNotificationButtonStatus.start);
           });
           break;
         case TimerState.cancel:
+          _stopwatchStatus = StopwatchStatus.stopped;
+
           if (widget.settings.speak && !widget.settings.speakShort) {
             widget.flutterTts.speak(_ttsPaused);
           }
@@ -93,7 +107,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
             _timer = null;
           }
 
-          _updateNotification("play", "Start", "Nulstil");
+          _updateNotification(StopwatchNotificationButtonStatus.start,
+              StopwatchNotificationButtonStatus.start);
           break;
         case TimerState.setTime:
           break;
@@ -144,7 +159,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
       _speakTime(_elapsedTimeMinutes, _elapsedTimeSeconds, vibrate);
     }
 
-    _updateNotification("pause", "Pause", "Nulstil");
+    _updateNotification(StopwatchNotificationButtonStatus.pause,
+        StopwatchNotificationButtonStatus.pause);
   }
 
   void _speakTime(int minutes, int seconds, bool vibrate) async {
@@ -183,21 +199,41 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
     }
   }
 
-  void _updateNotification(
-      String actionButtonToShow, String buttonText, String button2Text) async {
-    await widget.notificationAction.show(
-        "Stopwatch Title",
-        "$_elapsedTimeMinutesFormatted:$_elapsedTimeSecondsFormatted",
-        actionButtonToShow,
-        buttonText,
-        button2Text);
+  void _updateNotification(StopwatchNotificationButtonStatus actionButtonToShow,
+      StopwatchNotificationButtonStatus button1TextStatus) async {
+    if (widget.settings.showNotification) {
+      await widget.notificationAction.show(
+          _notificationTitle,
+          "$_elapsedTimeMinutesFormatted:$_elapsedTimeSecondsFormatted",
+          actionButtonToShow == StopwatchNotificationButtonStatus.start
+              ? "play"
+              : "pause",
+          _getNotificationButtonText(button1TextStatus),
+          _notificationButton2Text);
+    }
+  }
+
+  String _getNotificationButtonText(StopwatchNotificationButtonStatus status) {
+    return status == StopwatchNotificationButtonStatus.start
+        ? _notificationButton1TextStart
+        : _notificationButton1TextPause;
   }
 
   void _setSettings(SettingsData settings) async {
-    ///TODO: Vi skal vise eller skjule notification,
-    ///men vi skal også sørge for at det er den rigtige tekst og knapper der bliver vist
     await widget.flutterTts.setVolume(settings.volume);
     await _setLanguage(settings.language);
+    if (!widget.settings.showNotification) {
+      await widget.notificationAction.cancel();
+    } else {
+      _updateNotification(
+          _stopwatchStatus == StopwatchStatus.started
+              ? StopwatchNotificationButtonStatus.pause
+              : StopwatchNotificationButtonStatus.start,
+          _stopwatchStatus == StopwatchStatus.started
+              ? StopwatchNotificationButtonStatus.pause
+              : StopwatchNotificationButtonStatus.start,
+        );
+    }
   }
 
   Future<void> _setLanguage(String language) async {
@@ -219,5 +255,13 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
     _ttsPaused = FlutterI18n.translate(context, "stopwatchWidget.text5");
     _ttsReset = FlutterI18n.translate(context, "stopwatchWidget.text6");
     _ttsAnd = FlutterI18n.translate(context, "stopwatchWidget.text7");
+    _notificationButton1TextStart =
+        FlutterI18n.translate(context, "stopwatchWidget.text8");
+    _notificationButton1TextPause =
+        FlutterI18n.translate(context, "stopwatchWidget.text9");
+    _notificationButton2Text =
+        FlutterI18n.translate(context, "stopwatchWidget.text10");
+    _notificationTitle =
+        FlutterI18n.translate(context, "stopwatchWidget.text11");
   }
 }

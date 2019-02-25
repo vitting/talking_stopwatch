@@ -43,6 +43,10 @@
         "text4": "Start",
         "text5": "Pause",
         "text6": "Reset",
-        "text7": "and"
+        "text7": "and",
+        "text8": "Start",
+        "text9": "Pause",
+        "text10": "Reset",
+        "text11": "Stopwatch"
     }
 }
