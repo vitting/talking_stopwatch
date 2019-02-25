@@ -9,6 +9,8 @@ import 'package:talking_stopwatch/ui/stopwatch_main.dart';
 
 void main() async {
   final FlutterTts flutterTts = new FlutterTts();
+  final NotificationAction notificationAction = new NotificationAction();
+
   String languageCode = await SystemHelpers.getSystemLanguageCode();
   if (languageCode != "da") {
     languageCode = "en";
@@ -20,11 +22,14 @@ void main() async {
     SystemHelpers.setScreenOn();
   }
 
-  await NotificationAction.initialize();
-
+  await notificationAction.initialize();
+  
   return runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: StopwatchMain(flutterTts: flutterTts, settings: settings),
+    home: StopwatchMain(
+        flutterTts: flutterTts,
+        settings: settings,
+        notificationAction: notificationAction),
     localizationsDelegates: [
       FlutterI18nDelegate(false, settings.language),
       GlobalMaterialLocalizations.delegate,

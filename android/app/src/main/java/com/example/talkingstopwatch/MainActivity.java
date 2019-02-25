@@ -1,14 +1,7 @@
 package com.example.talkingstopwatch;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
@@ -18,14 +11,9 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
-import static android.app.Notification.EXTRA_NOTIFICATION_ID;
-
 public class MainActivity extends FlutterActivity implements MethodCallHandler, StreamHandler {
-    private static final String CHANNEL = "talking.stopwatch.dk/notification";
-    private static final String EVENTCHANNEL = "talking.stopwatch.dk/stream";
-    private static final String NOTIFICATIONCHANNELID = "talking.stopwatch.dk/notification";
     public static EventSink mEventSink;
-    private NotificationManagerCompat mNotificationManager;
+    private NotificationAction mNotificationAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,30 +21,26 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
         GeneratedPluginRegistrant.registerWith(this);
 
         // We use this because this class implements MethodCallHander
-        MethodChannel channel = new MethodChannel(getFlutterView(), CHANNEL);
+        MethodChannel channel = new MethodChannel(getFlutterView(), NotificationAction.CHANNEL);
         // We use this because this class implements StreamHandler;
         channel.setMethodCallHandler(this);
 
-        EventChannel eventChannel = new EventChannel(getFlutterView(), EVENTCHANNEL);
+        EventChannel eventChannel = new EventChannel(getFlutterView(), NotificationAction.EVENTCHANNEL);
         eventChannel.setStreamHandler(this);
-
     }
 
     @Override
     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
         switch (call.method) {
             case "showNotification":
-                NotificationCompat.Builder builder;
-                String title = call.argument("title");
-                String body = call.argument("body");
-                String actionButtonToShow = call.argument("actionButtonToShow");
-                String buttonText = call.argument("buttonText");
-                String button2Text = call.argument("button2Text");
-
                 try {
-                    boolean showPlay = actionButtonToShow != null && actionButtonToShow.equals("play");
-                    builder = buildNotification(title, body, buttonText, button2Text, showPlay);
-                    mNotificationManager.notify(0, builder.build());
+                    mNotificationAction.showNotification(
+                            call.argument("title"),
+                            call.argument("body"),
+                            call.argument("actionButtonToShow"),
+                            call.argument("buttonText"),
+                            call.argument("button2Text")
+                    );
                 } catch (NullPointerException e) {
                     result.error("Parameter error", null, e);
                 }
@@ -64,15 +48,11 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
                 result.success(true);
                 break;
             case "cancelNotification":
-                mNotificationManager.cancel(0);
+                mNotificationAction.cancelNotification();
                 result.success(true);
                 break;
             case "initializeNotification":
-                createNotificationChannel();
-                if (mNotificationManager == null) {
-                    mNotificationManager = NotificationManagerCompat.from(this);
-                }
-
+                mNotificationAction = new NotificationAction(this);
                 result.success(true);
                 break;
             default:
@@ -90,66 +70,5 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
     @Override
     public void onCancel(Object o) {
         mEventSink = null;
-    }
-
-    // TODO: Set this on init
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(NOTIFICATIONCHANNELID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private NotificationCompat.Builder buildNotification(String title, String body, String buttonText, String button2Text, boolean showPlayButton) {
-        // On Tap show activity
-        Intent intent = new Intent(this, this.getClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        // Action button play/pause
-        Intent playPauseIntent = new Intent(this, NotificationActionBroardcastReceiver.class);
-        playPauseIntent
-                .setAction("playPausePress")
-                .putExtra("PLAYPAUSEBUTTONSTATUS", showPlayButton ? "action_play" : "action_pause");
-
-        PendingIntent playPausePendingIntent =
-                PendingIntent.getBroadcast(this, 0, playPauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Action button play/pause
-        Intent resetIntent = new Intent(this, NotificationActionBroardcastReceiver.class);
-        resetIntent
-                .setAction("resetPress")
-                .putExtra("RESETBUTTONSTATUS", "action_reset");
-
-        PendingIntent resetPendingIntent =
-                PendingIntent.getBroadcast(this, 0, resetIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            playPauseIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
-            resetIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
-        }
-
-        return new NotificationCompat.Builder(this, NOTIFICATIONCHANNELID)
-                .setOngoing(true)
-                .setSmallIcon(R.mipmap.notification_icon)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setSound(null)
-                .setVibrate(null)
-                .setShowWhen(false)
-                .setOnlyAlertOnce(true)
-                .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .addAction(showPlayButton ? R.drawable.ic_play : R.drawable.ic_pause, buttonText, playPausePendingIntent)
-                .addAction(R.drawable.ic_reset, button2Text, resetPendingIntent);
     }
 }

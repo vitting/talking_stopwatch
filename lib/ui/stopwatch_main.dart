@@ -19,8 +19,10 @@ import 'package:talking_stopwatch/ui/stopwatch_timer_widget.dart';
 class StopwatchMain extends StatefulWidget {
   final FlutterTts flutterTts;
   final SettingsData settings;
+  final NotificationAction notificationAction;
 
-  const StopwatchMain({Key key, this.flutterTts, this.settings})
+  const StopwatchMain(
+      {Key key, this.flutterTts, this.settings, this.notificationAction})
       : super(key: key);
 
   @override
@@ -39,7 +41,7 @@ class StopwatchMainState extends State<StopwatchMain> {
   void initState() {
     super.initState();
 
-    NotificationAction.nofiticationEventStream.listen((String value) {
+    widget.notificationAction.nofiticationEventStream.listen((String value) {
       switch (value) {
         case "action_play":
           _buttonAction(StopwatchButtonAction.playTap);
@@ -82,6 +84,7 @@ class StopwatchMainState extends State<StopwatchMain> {
                       StopwatchWidget(
                           timeStream: _stopwatchController.stream,
                           settings: widget.settings,
+                          notificationAction: widget.notificationAction,
                           flutterTts: widget.flutterTts),
                       SizedBox(
                         height: 50,
@@ -173,7 +176,7 @@ class StopwatchMainState extends State<StopwatchMain> {
               ExitDialog(settings: widget.settings));
 
       if (exitApp) {
-        await NotificationAction.cancel();
+        await widget.notificationAction.cancel();
       }
 
       return exitApp;

@@ -12,9 +12,14 @@ class StopwatchWidget extends StatefulWidget {
   final Stream<TimerValues> timeStream;
   final SettingsData settings;
   final FlutterTts flutterTts;
+  final NotificationAction notificationAction;
 
   const StopwatchWidget(
-      {Key key, this.timeStream, this.flutterTts, this.settings})
+      {Key key,
+      this.timeStream,
+      this.flutterTts,
+      this.settings,
+      this.notificationAction})
       : super(key: key);
   @override
   _StopwatchWidgetState createState() => _StopwatchWidgetState();
@@ -180,7 +185,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
 
   void _updateNotification(
       String actionButtonToShow, String buttonText, String button2Text) async {
-    await NotificationAction.show(
+    await widget.notificationAction.show(
         "Stopwatch Title",
         "$_elapsedTimeMinutesFormatted:$_elapsedTimeSecondsFormatted",
         actionButtonToShow,
@@ -189,6 +194,8 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   }
 
   void _setSettings(SettingsData settings) async {
+    ///TODO: Vi skal vise eller skjule notification,
+    ///men vi skal også sørge for at det er den rigtige tekst og knapper der bliver vist
     await widget.flutterTts.setVolume(settings.volume);
     await _setLanguage(settings.language);
   }

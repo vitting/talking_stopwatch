@@ -1,53 +1,59 @@
 import 'package:flutter/services.dart';
-class NotificationAction {
-  static const MethodChannel _methodeChannel =
-      const MethodChannel("talking.stopwatch.dk/notification");
-  static const EventChannel _eventChannel =
-      const EventChannel("talking.stopwatch.dk/stream");
 
-  static Stream<dynamic> _nofiticationEventStream;
+class NotificationAction {
+  MethodChannel _methodeChannel =
+      const MethodChannel("talking.stopwatch.dk/notification");
+  EventChannel _eventChannel =
+      const EventChannel("talking.stopwatch.dk/stream");
+  Stream<dynamic> _nofiticationEventStream;
+
+  NotificationAction() {
+    _methodeChannel = const MethodChannel("talking.stopwatch.dk/notification");
+    _eventChannel = const EventChannel("talking.stopwatch.dk/stream");
+  }
 
   /// buttonAction = play | pause
-  static Future<String> show(String title, String body, String actionButtonToShow, String buttonText, String button2Text) async {
+  Future<bool> show(String title, String body, String actionButtonToShow,
+      [String buttonText = "", String button2Text = ""]) async {
     try {
       var result = await _methodeChannel.invokeMethod("showNotification", {
-        "title":title,
-        "body":body,
-        "actionButtonToShow":actionButtonToShow,
-        "buttonText":buttonText,
-        "button2Text":button2Text
+        "title": title,
+        "body": body,
+        "actionButtonToShow": actionButtonToShow,
+        "buttonText": buttonText,
+        "button2Text": button2Text
       });
-      
-      return result.toString();
+
+      return result;
     } catch (e) {
       print(e);
-      return null;
+      return false;
     }
   }
 
-  static Future<String> cancel() async {
+  Future<bool> cancel() async {
     try {
       var result = await _methodeChannel.invokeMethod("cancelNotification");
-      return result.toString();
+      return result;
     } catch (e) {
       print(e);
-      return null;
+      return false;
     }
   }
 
-  static Stream<String> get nofiticationEventStream {
+  Stream<String> get nofiticationEventStream {
     _nofiticationEventStream ??= _eventChannel.receiveBroadcastStream();
     return _nofiticationEventStream
         .map<String>((dynamic value) => value.toString());
   }
 
-  static Future<bool> initialize() async {
+  Future<bool> initialize() async {
     try {
       var result = await _methodeChannel.invokeMethod("initializeNotification");
       return result.toString().isNotEmpty;
     } catch (e) {
       print(e);
-      return Future.value(false);
+      return false;
     }
   }
 }
