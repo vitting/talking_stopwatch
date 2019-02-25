@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:talking_stopwatch/helpers/common_functions.dart';
 import 'package:talking_stopwatch/helpers/notification_action.dart';
@@ -54,8 +55,13 @@ class StopwatchMainState extends State<StopwatchMain> {
           break;
         default:
       }
-      print(value);
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    FlutterI18n.refresh(context, widget.settings.language);
   }
 
   @override

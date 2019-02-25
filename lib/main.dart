@@ -23,7 +23,6 @@ void main() async {
   }
 
   await notificationAction.initialize();
-  
   return runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: StopwatchMain(
@@ -31,7 +30,7 @@ void main() async {
         settings: settings,
         notificationAction: notificationAction),
     localizationsDelegates: [
-      FlutterI18nDelegate(false, settings.language),
+      FlutterI18nDelegate(false),
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate
     ],
