@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:talking_stopwatch/helpers/common_functions.dart';
@@ -53,6 +54,11 @@ class StopwatchMainState extends State<StopwatchMain> {
         case "action_reset":
           _buttonAction(StopwatchButtonAction.playLongPress);
           break;
+        // case "action_exit":
+        //   widget.notificationAction.cancel().whenComplete(() {
+        //     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        //   });
+        //   break;
         default:
       }
     });
@@ -176,16 +182,20 @@ class StopwatchMainState extends State<StopwatchMain> {
       });
       return false;
     } else {
-      bool exitApp = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext dialogContext) =>
-              ExitDialog(settings: widget.settings));
-
-      if (exitApp) {
-        await widget.notificationAction.cancel();
-      }
-
-      return exitApp;
+      return _exit();
     }
+  }
+
+  Future<bool> _exit() async {
+    bool exitApp = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext dialogContext) =>
+            ExitDialog(settings: widget.settings));
+
+    if (exitApp) {
+      await widget.notificationAction.cancel();
+    }
+
+    return exitApp;
   }
 }

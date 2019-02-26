@@ -7,20 +7,28 @@ import android.content.Intent;
 public class NotificationActionBroardcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("playPausePress")) {
-            if (MainActivity.mEventSink != null) {
-                String currentButtonAction = intent.getStringExtra("PLAYPAUSEBUTTONSTATUS");
+        switch (intent.getAction()) {
+            case "playPausePress":
+                if (MainActivity.mEventSink != null) {
+                    String currentButtonAction = intent.getStringExtra("PLAYPAUSEBUTTONSTATUS");
 
-                MainActivity.mEventSink.success(currentButtonAction);
-            }
-        }
+                    MainActivity.mEventSink.success(currentButtonAction);
+                }
+                break;
+            case "resetPress":
+                if (MainActivity.mEventSink != null) {
+                    String currentButtonAction = intent.getStringExtra("RESETBUTTONSTATUS");
 
-        if (intent.getAction().equals("resetPress")) {
-            if (MainActivity.mEventSink != null) {
-                String currentButtonAction = intent.getStringExtra("RESETBUTTONSTATUS");
+                    MainActivity.mEventSink.success(currentButtonAction);
+                }
+                break;
+            case "exitPress":
+                if (MainActivity.mEventSink != null) {
+                    String currentButtonAction = intent.getStringExtra("EXITBUTTONSTATUS");
 
-                MainActivity.mEventSink.success(currentButtonAction);
-            }
+                    MainActivity.mEventSink.success(currentButtonAction);
+                }
+                break;
         }
     }
 }

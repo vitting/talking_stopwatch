@@ -14,14 +14,17 @@ class NotificationAction {
 
   /// buttonAction = play | pause
   Future<bool> show(String title, String body, String actionButtonToShow,
-      [String buttonText = "", String button2Text = ""]) async {
+      [String buttonText = "",
+      String button2Text = "",
+      String button3Text = ""]) async {
     try {
       var result = await _methodeChannel.invokeMethod("showNotification", {
         "title": title,
         "body": body,
         "actionButtonToShow": actionButtonToShow,
         "buttonText": buttonText,
-        "button2Text": button2Text
+        "button2Text": button2Text,
+        "button3Text": button3Text
       });
 
       return result;

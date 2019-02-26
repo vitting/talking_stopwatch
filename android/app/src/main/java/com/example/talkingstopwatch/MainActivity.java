@@ -39,7 +39,8 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler, 
                             call.argument("body"),
                             call.argument("actionButtonToShow"),
                             call.argument("buttonText"),
-                            call.argument("button2Text")
+                            call.argument("button2Text"),
+                            call.argument("button3Text")
                     );
                 } catch (NullPointerException e) {
                     result.error("Parameter error", null, e);
