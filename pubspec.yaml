@@ -13,7 +13,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  flutter_tts: ^0.2.3
+  flutter_tts: ^0.2.4
   screen: ^0.0.4
   vibration: ^1.0.1
   intl: ^0.15.7
