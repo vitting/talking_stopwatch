@@ -45,6 +45,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
   String _notificationButton1TextStart = "";
   String _notificationButton1TextPause = "";
   String _notificationButton2Text = "";
+  String _notificationButton3Text = "";
   String _notificationTitle = "";
   StopwatchStatus _stopwatchStatus = StopwatchStatus.stopped;
 
@@ -210,7 +211,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
               : "pause",
           _getNotificationButtonText(button1TextStatus),
           _notificationButton2Text,
-          "Exit");
+          _notificationButton3Text);
     }
   }
 
@@ -262,7 +263,7 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
         FlutterI18n.translate(context, "stopwatchWidget.text9");
     _notificationButton2Text =
         FlutterI18n.translate(context, "stopwatchWidget.text10");
-    _notificationButton2Text =
+    _notificationButton3Text =
         FlutterI18n.translate(context, "stopwatchWidget.text12");
     _notificationTitle =
         FlutterI18n.translate(context, "stopwatchWidget.text11");
